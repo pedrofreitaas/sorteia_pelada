@@ -4,6 +4,9 @@ import {DefineSquadScreen} from './DefineSquad'
 import {CreatePlayerScreen} from './CreatePlayer'
 import {ScreenIDs} from '../extra_modules/ScreenIDs';
 import * as screens_map from './screens_map.json'
+import * as SecureStore from 'expo-secure-store';
+
+const key = 'players';
 
 function DefaultScreen( {nav} ) {
     const backImg = require('../assets/imgs/soccer_field.jpg');

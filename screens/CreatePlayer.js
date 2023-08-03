@@ -2,34 +2,7 @@ import { useState } from "react";
 import { View, Image, FlatList, Text, TextInput, StyleSheet, ImageBackground, Pressable } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import {Slider} from '@miblanchard/react-native-slider';
-import * as SecureStore from 'expo-secure-store';
-
-const key = 'players';
-
-const savePlayer = async ( name, rating, imgURI ) => {
-    let players = await SecureStore.getItemAsync(key);
-
-    players = JSON.parse(players);
-
-    if(players === null)
-        players = {}
-
-    if(players[name] !== undefined) {
-        alert('Jogador já existe no sistema.')
-        return;
-    }
-
-    players[name] = {
-        rating: rating,
-        imgURI: imgURI,
-    };
-
-    players = JSON.stringify(players);
-
-    await SecureStore.setItemAsync(key, players);
-
-    alert('Jogador cadastrado com sucesso.');
-}
+import {savePlayer} from '../extra_modules/DataStorage'
 
 function Form ( props ) {
     const [name, setName] = useState(undefined);

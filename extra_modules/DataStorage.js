@@ -1,9 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-const key = 'players';
-
-function removeWhiteSpaces( str ) {
+function _removeWhiteSpaces( str ) {
     if(typeof str !== typeof "") throw TypeError;
 
     while ( str[str.length-1] === " " )
@@ -12,31 +9,25 @@ function removeWhiteSpaces( str ) {
     return str;
 }
 
-export const savePlayer = async ( name, rating, imgURI ) => {
-    let players = await SecureStore.getItemAsync(key);
+const _savePlayer = async ( name, rating, imgURI, available=true ) => {
+    let players = await getPlayers();
 
-    players = JSON.parse(players);
+    if(players === null) players = {};
 
-    if(players === null)
-        players = {}
-
-    if(players[name] !== undefined) {
-        alert('Jogador já existe no sistema.')
-        return;
-    }
-
-    players[ removeWhiteSpaces(name) ] = {
+    players[ _removeWhiteSpaces(name) ] = {
         rating: rating,
         imgURI: imgURI,
-        available: true,
+        available: available,
     };
 
-    await SecureStore.setItemAsync(key, JSON.stringify(players));
+    const key = 'players';
 
-    alert('Jogador cadastrado com sucesso.');
-}
+    await SecureStore.setItemAsync(key, JSON.stringify(players));
+};
 
 export const getPlayers = async () => {
+    const key = 'players';
+
     const value = await SecureStore.getItemAsync(key);
     return JSON.parse(value);
 }
@@ -44,45 +35,53 @@ export const getPlayers = async () => {
 export const getPlayer = async (name) => {
     let players = await getPlayers();
 
+    if(players === null) return undefined;
+
     return players[name];
 }
 
+export const savePlayer = async ( name, rating, imgURI, available=true ) => {
+    if(await getPlayer(name) !== undefined) {
+        alert('Jogador já existe no sistema.')
+        return;
+    }
+
+    try {
+        await _savePlayer(name, rating, imgURI, available);
+        alert('Jogador cadastrado com sucesso.');
+    } catch(error) {
+        alert('Algum erro ocorreu.');
+    }
+}
+
 export const displayPlayers = async () => {
-    console.log( await SecureStore.getItemAsync(key) );
+    console.log( await getPlayers() );
 }
 
 export const changePlayer = async ( name, rating, imgURI, available ) => {
     let players = await getPlayers();
-
-    players = JSON.parse(players);
     
     if( players[name] === undefined ) return false;
 
-    players[name].imgURI = imgURI
-    players[name].rating = rating;
-    players[name].available = available;
-
-    await SecureStore.setItemAsync( key, JSON.stringify(players) );
+    await _savePlayer(name, rating, imgURI, available);
 
     return true;
 }
 
 export const invertPlayerAvailability = async ( name ) => {
-    let players = await getPlayers();
-
-    players = JSON.parse(players);
+    let player = await getPlayer(name);
     
-    return changePlayer(name, players[name].rating, players[name].imgURI, !players[name].available);
+    return await _savePlayer(name, player.rating, player.imgURI, !player.available);
 }
 
 export const delPlayer = async ( name ) => {
     let players = await getPlayers();
 
-    players = JSON.parse(players);
-
     if (players[name] === undefined) return false;
     
     delete players[name];
+
+    const key = 'players';
     
     await SecureStore.setItemAsync( key, JSON.stringify(players) );
 
@@ -90,5 +89,6 @@ export const delPlayer = async ( name ) => {
 }
 
 export const delAllPlayers = async () => {
+    const key = 'players'
     await SecureStore.deleteItemAsync(key);
 }

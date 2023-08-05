@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Text, StyleSheet, View, Pressable, ImageBackground, Image } from "react-native";
+import { useState } from "react";
+import { Text, StyleSheet, View, Pressable, ImageBackground, Image, FlatList } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 import {getPlayers, invertPlayerAvailability, getPlayer, displayPlayers, delAllPlayers} from '../extra_modules/DataStorage'
 
@@ -35,21 +35,22 @@ function PlayerContainer( {name} ) {
 }
 
 function AvailablePlayersDisplay() {
-    let playerNamesList = [];
-
-    const getPlayersFromStorage = async () => {
+    const playerNames = []
+    
+    const getPlayersNameListFromStorage = async () => {
         const value = await getPlayers();
         
-        for(const player in value) playerNamesList.push(player);
-    }
+        for(const player in value) playerNames.push(player);
+    };
 
-    getPlayersFromStorage();
+    getPlayersNameListFromStorage();
 
     return (
         <View style={styles.players_display}>
-            {
-            playerNamesList.map( function render(name) {return <PlayerContainer name={name}/>;} )
-            }
+            <FlatList
+            data={ playerNames }
+            renderItem={ (playerName) =>  <PlayerContainer name={playerName.item}/> }
+            />
         </View>
     );
 }

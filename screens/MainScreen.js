@@ -4,9 +4,7 @@ import {DefineSquadScreen} from './DefineSquad'
 import {CreatePlayerScreen} from './CreatePlayer'
 import {ScreenIDs} from '../extra_modules/ScreenIDs';
 import * as screens_map from './screens_map.json'
-import * as SecureStore from 'expo-secure-store';
-
-const key = 'players';
+import { displayPlayers } from '../extra_modules/DataStorage';
 
 function DefaultScreen( {nav} ) {
     const backImg = require('../assets/imgs/soccer_field.jpg');
@@ -38,6 +36,11 @@ function DefaultScreen( {nav} ) {
                     nav.currID = 3;
                 } }> 
                     <Text> Alterar jogador. </Text>
+                </Pressable>
+
+                <Pressable
+                onPress={displayPlayers}>
+                    <Text style={{backgroundColor: '#fff', fontWeight: 'bold'}}> PRESS TO DELETE ALL PLAYERS </Text>
                 </Pressable>
 
             </View>

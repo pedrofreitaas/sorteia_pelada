@@ -1,12 +1,14 @@
-import { useState } from "react";
-import { View, Image, FlatList, Text, TextInput, StyleSheet, ImageBackground, Pressable } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Image, FlatList, Text, TextInput, StyleSheet, ImageBackground, Pressable, se } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import {Slider} from '@miblanchard/react-native-slider';
 import {savePlayer} from '../extra_modules/DataStorage'
+import { OptionsContainer } from "../extra_modules/OptionsContainer";
 
 function Form ( props ) {
     const [name, setName] = useState(undefined);
     const [rating, setRating] = useState(undefined);
+    const [pos, setPos] = useState(undefined);
 
     const question_mark = require('../assets/imgs/question_mark.jpg');
     const [image, setImage] = useState(undefined);
@@ -23,12 +25,12 @@ function Form ( props ) {
     };
 
     const submit = async () => {
-        if(name===null || rating===null || image === undefined ){
+        if(name===null || rating===null || pos === undefined || image === undefined ){
             alert('Faltam campos a serem preenchidos. Consulte o ícone acima para mais informações.')
             return;
         }   
         
-        await savePlayer(name, rating[0], image);
+        await savePlayer(name, rating[0], pos, image);
     };
 
     return (
@@ -42,6 +44,12 @@ function Form ( props ) {
                 name="nome" placeholder={"Nome"} style={styles.input}
                 value={name}
                 onChangeText={setName}></TextInput>
+
+                <OptionsContainer
+                props={ {
+                    options: ['GOL', 'ZAG', 'MEI', 'ATA'],
+                    setValue: (value) => setPos(value) 
+                } }/>
 
                 <Text style={styles.rating_text}> Nota </Text>
                 <Slider
@@ -84,6 +92,7 @@ function Info ( props ) {
             data={
             ["Clique na interrogação para escolher uma imagem para representar o jogador.",
              "Preencha o nome do respectivo jogador.",
+             "Selecione a posição do jogador.",
              "Dê uma nota de 0 a 5 para o jogador movendo a estrela. Quanto mais a direita maior a nota.",
              "Por fim, crie o jogador com o botão Criar."
             ]}
@@ -133,11 +142,12 @@ const styles = StyleSheet.create( {
         borderColor: '#004',
 
         borderStartWidth: 5,
+
+        zIndex: 1,
     },
 
     infos: {
-        padding: 10,
-        
+        padding: 10,  
     },
 
     form: {

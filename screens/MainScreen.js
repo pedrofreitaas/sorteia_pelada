@@ -4,7 +4,7 @@ import {DefineSquadScreen} from './DefineSquad'
 import {CreatePlayerScreen} from './CreatePlayer'
 import {ScreenIDs} from '../extra_modules/ScreenIDs';
 import * as screens_map from './screens_map.json'
-import { displayPlayers } from '../extra_modules/DataStorage';
+import { delAllPlayers, displayPlayers } from '../extra_modules/DataStorage';
 
 function DefaultScreen( {nav} ) {
     const backImg = require('../assets/imgs/soccer_field.jpg');
@@ -40,7 +40,12 @@ function DefaultScreen( {nav} ) {
 
                 <Pressable
                 onPress={displayPlayers}>
-                    <Text style={{backgroundColor: '#fff', fontWeight: 'bold'}}> PRESS TO DELETE ALL PLAYERS </Text>
+                    <Text style={{backgroundColor: '#fff', fontWeight: 'bold'}}> PRESS TO DISPLAY ALL PLAYERS </Text>
+                </Pressable>
+
+                <Pressable
+                onPress={delAllPlayers}>
+                    <Text style={{backgroundColor: '#fff', fontWeight: 'bold', marginTop: 20}}> PRESS TO DELETE ALL PLAYERS </Text>
                 </Pressable>
 
             </View>

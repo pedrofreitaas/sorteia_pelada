@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function _removeWhiteSpaces( str ) {
     if(typeof str !== typeof "") throw TypeError;
@@ -9,28 +9,29 @@ function _removeWhiteSpaces( str ) {
     return str;
 }
 
-const _savePlayer = async ( name, rating, imgURI, available=true ) => {
+export const getPlayers = async () => {
+    const key = 'players';
+
+    const value = await AsyncStorage.getItem(key);
+
+    return JSON.parse(value);
+}
+
+const _savePlayer = async ( name, rating, pos, imgURI, available=false ) => {
     let players = await getPlayers();
 
     if(players === null) players = {};
 
     players[ _removeWhiteSpaces(name) ] = {
         rating: rating,
+        pos: pos,
         imgURI: imgURI,
         available: available,
     };
 
     const key = 'players';
-
-    await SecureStore.setItemAsync(key, JSON.stringify(players));
+    await AsyncStorage.setItem(key, JSON.stringify(players));
 };
-
-export const getPlayers = async () => {
-    const key = 'players';
-
-    const value = await SecureStore.getItemAsync(key);
-    return JSON.parse(value);
-}
 
 export const getPlayer = async (name) => {
     let players = await getPlayers();
@@ -40,14 +41,14 @@ export const getPlayer = async (name) => {
     return players[name];
 }
 
-export const savePlayer = async ( name, rating, imgURI, available=true ) => {
+export const savePlayer = async ( name, rating, pos, imgURI, available ) => {
     if(await getPlayer(name) !== undefined) {
         alert('Jogador já existe no sistema.')
         return;
     }
 
     try {
-        await _savePlayer(name, rating, imgURI, available);
+        await _savePlayer(name, rating, pos, imgURI, available);
         alert('Jogador cadastrado com sucesso.');
     } catch(error) {
         alert('Algum erro ocorreu.');
@@ -58,12 +59,12 @@ export const displayPlayers = async () => {
     console.log( await getPlayers() );
 }
 
-export const changePlayer = async ( name, rating, imgURI, available ) => {
+export const changePlayer = async ( name, rating, pos, imgURI, available=false ) => {
     let players = await getPlayers();
     
     if( players[name] === undefined ) return false;
 
-    await _savePlayer(name, rating, imgURI, available);
+    await _savePlayer(name, rating, pos, imgURI, available);
 
     return true;
 }
@@ -71,7 +72,7 @@ export const changePlayer = async ( name, rating, imgURI, available ) => {
 export const invertPlayerAvailability = async ( name ) => {
     let player = await getPlayer(name);
     
-    return await _savePlayer(name, player.rating, player.imgURI, !player.available);
+    return await _savePlayer(name, player.rating, player.pos, player.imgURI, !player.available);
 }
 
 export const delPlayer = async ( name ) => {
@@ -82,13 +83,13 @@ export const delPlayer = async ( name ) => {
     delete players[name];
 
     const key = 'players';
-    
-    await SecureStore.setItemAsync( key, JSON.stringify(players) );
+    await AsyncStorage.setItem(key, JSON.stringify(players));
 
     return true;
 }
 
 export const delAllPlayers = async () => {
-    const key = 'players'
-    await SecureStore.deleteItemAsync(key);
+    const key = 'players';
+
+    await AsyncStorage.removeItem(key);
 }

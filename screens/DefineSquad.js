@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, StyleSheet, View, Pressable, ImageBackground, Image, FlatList } from "react-native";
+import { Text, StyleSheet, View, Pressable, ImageBackground, Image, FlatList, ScrollView } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 import {getPlayers, invertPlayerAvailability, getPlayer, displayPlayers, delAllPlayers} from '../extra_modules/DataStorage'
 
@@ -34,7 +34,7 @@ function PlayerContainer( {name} ) {
     );
 }
 
-function AvailablePlayersDisplay() {
+function PlayersDisplay() {
     const playerNames = []
     
     const getPlayersNameListFromStorage = async () => {
@@ -49,35 +49,63 @@ function AvailablePlayersDisplay() {
         <View style={styles.players_display}>
             <FlatList
             data={ playerNames }
+            horizontal= {true}
             renderItem={ (playerName) =>  <PlayerContainer name={playerName.item}/> }
             />
         </View>
     );
 }
 
-function AllPlayers() {
-    const [display, setDisplay] = useState(false);
+function raffledPlayers () {
+    return [];
+}
+
+function Squad( props ) {
+    const players = raffledPlayers();
 
     return (
-        <Pressable onPress={ ()=> setDisplay(!display)}> 
-            <MaterialIcons 
-            style={styles.show_players_pressable}
-            name="person-search" size={40} color="rgba(0,100,120,1)" />
-
-            {display && <AvailablePlayersDisplay/>}
-        </Pressable>
+        <Text style={ {top: '40%', left: '10%' } } > DEFINED SQUAD </Text>
     );
 }
 
 export function DefineSquadScreen( {nav} ) {
     nav.goBackHardwareEventTrigger();
 
+    const [display, setDisplay] = useState(false);
+    const [raffled, setRaffled] = useState(false);
+
+    const rafflePlayers = () => {
+        setRaffled(true);
+    }
+
     return (
         <ImageBackground
         style={styles.container}
         source={require('../assets/imgs/soccer_field2.jpg')}
         opacity={.88}>
-            <AllPlayers/>
+
+            {raffled ? <Squad/> :
+
+            <View style={styles.header}>
+                <View style={styles.buttons}>
+                    <Pressable 
+                    onPress={ ()=> setDisplay(!display)}
+                    style={styles.show_players_pressable}> 
+                        <MaterialIcons
+                        name="person-search" size={20} color="rgba(0,100,120,1)" />
+                    </Pressable>
+
+                    <Pressable 
+                    style={styles.raffle_button}
+                    onPress={rafflePlayers}>
+                        <Text style={ { fontWeight: "bold"} }> Sortear </Text>
+                    </Pressable>
+                </View>
+
+            {display && <PlayersDisplay/>}
+            </View>
+            }
+
         </ImageBackground>
     );
 };
@@ -87,31 +115,50 @@ const styles = StyleSheet.create( {
         flex: 1,
     },
 
-    show_players_pressable: {
-        backgroundColor: '#fff',
-        padding: 5,
+    header: {
+        flexDirection: 'column',
 
-        width: 50, height: 'auto',
-
-        top: 100, left: 20,
-
-        borderRadius: 10,
+        top: '10%',
+        marginLeft: 20, marginRight: 20,
     },
 
-    players_display: {
-        top: 300, left: 20,
-        
+    buttons: {
+        flexDirection: 'row',
+    },
+
+    show_players_pressable: {
+        backgroundColor: '#fff',
+        alignItems: 'center', justifyContent: 'center',
+        width: 35, height: 35,
+        borderRadius: 10,
+
+        borderWidth: 2, borderColor: '#eff',
+    },
+
+    raffle_button: {
+        backgroundColor: '#fff',
+        alignItems: 'center', justifyContent: 'center',
+        width: 80, height: 35,
+        borderRadius: 10,
+
+        borderWidth: 2, borderColor: '#eff',
+
+        marginLeft: 20,
+    },
+
+    players_display: {        
+        alignSelf: 'center',
+
         backgroundColor: 100,
+        padding: 10,
+
+        width: 420, height: 120,
     },
 
     player_container: {
-        padding: 10,
-
-        borderTopLeftRadius: 60, borderTopRightRadius: 60,
-        borderBottomLeftRadius: 20, borderBottomRightRadius: 20,
+        margin: 5, padding: 10,
 
         backgroundColor: '#fff',
-        width: 80, height: 'auto',
     },
 
     player_container_img: {
@@ -140,6 +187,5 @@ const styles = StyleSheet.create( {
         top: '10%', left: '10%',
         backgroundColor: 'rgba(255, 0, 0, 1)',
         width: 20, height: 20, borderRadius: 20,
-    }
-
+    },
 } );

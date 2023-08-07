@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, StyleSheet, View, Pressable, ImageBackground, Image, FlatList, ScrollView } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
-import {getPlayers, invertPlayerAvailability, getPlayer, displayPlayers, delAllPlayers} from '../extra_modules/DataStorage'
+import {getPlayers, invertPlayerAvailability, getPlayer, displayPlayers, delAllPlayers, delPlayer} from '../extra_modules/DataStorage'
+
+function getRandomIntFromAtoB(A, B) { // does not include B
+    return Math.round( A + Math.random()*(B-A) );
+}
 
 function PlayerContainer( {name} ) {
     const [player, setPlayer] = useState();
@@ -56,12 +60,69 @@ function PlayersDisplay() {
     );
 }
 
-function raffledPlayers () {
-    return [];
+class NotSufficientPlayers extends Error{
+    constructor(pos, need, have) {
+        super(`Faltam ${need-have} ${pos}'s disponíveis no sistema.`);
+    }
+}
+
+async function sortPlayersByPos(configs) {
+    const players = Object.entries( await getPlayers()); 
+
+    const positions = ['GOL', 'ZAG', 'MEI', 'ATA'];
+
+    let playersSortedByPos = {}
+
+    for(const pos of positions) {
+        playersSortedByPos[pos] = players.filter( (item) => item[1].pos === pos && item[1].available );
+        playersSortedByPos[pos].sort( (item1, item2) => item1[1].rating - item2[1].rating );
+
+        if(playersSortedByPos[pos].length < configs[pos]*2)
+            throw new NotSufficientPlayers(pos, configs[pos]*2, playersSortedByPos[pos].length);
+    }
+
+    return playersSortedByPos;
+}
+
+async function raffledPlayers() {
+    const configs = {GOL: 1, ZAG: 2, MEI: 2, ATA: 1};
+    
+    try {
+        let players = await sortPlayersByPos(configs);
+
+        let squads = [[], []];
+
+        for( const item in players )
+            for( let a=0; a<configs[item]; a++ ) {
+                let whichSquad = getRandomIntFromAtoB(0, 1);
+                let index = getRandomIntFromAtoB(0, players[item].length-2);
+
+                squads[whichSquad].push(players[item][index]);
+                squads[Number(!whichSquad)].push(players[item][index+1]);
+
+                // avoid repeat.
+                players[item].splice(index, index+1);
+            }
+            
+        return squads;
+
+    } catch (Error) {
+        if(Error instanceof NotSufficientPlayers)
+            alert(Error);
+        else
+            alert('Algum erro ocorreu.')
+    }
 }
 
 function Squad( props ) {
-    const players = raffledPlayers();
+    const [squads, setSquads] = useState(undefined);
+
+    const _setSquads = async () => {
+        const value = await raffledPlayers();
+        setSquads(value);
+    };
+
+    _setSquads();
 
     return (
         <Text style={ {top: '40%', left: '10%' } } > DEFINED SQUAD </Text>

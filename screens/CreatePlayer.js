@@ -7,7 +7,7 @@ import { OptionsContainer } from "../extra_modules/OptionsContainer";
 
 function Form ( props ) {
     const [name, setName] = useState(undefined);
-    const [rating, setRating] = useState(undefined);
+    const [rating, setRating] = useState(false);
     const [pos, setPos] = useState(undefined);
 
     const question_mark = require('../assets/imgs/question_mark.jpg');
@@ -25,7 +25,7 @@ function Form ( props ) {
     };
 
     const submit = async () => {
-        if(name===null || rating===null || pos === undefined || image === undefined ){
+        if(name===null || rating===false || pos === undefined || image === undefined ){
             alert('Faltam campos a serem preenchidos. Consulte o ícone acima para mais informações.')
             return;
         }   
@@ -51,7 +51,7 @@ function Form ( props ) {
                     setValue: (value) => setPos(value) 
                 } }/>
 
-                <Text style={styles.rating_text}> Nota </Text>
+                <Text style={styles.rating_text}> Nota: {Number(rating).toFixed(2)} </Text>
                 <Slider
                 value={rating} onValueChange={setRating}
                 minimumValue={0} maximumValue={5}

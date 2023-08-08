@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Text, StyleSheet, View, Pressable, ImageBackground, Image, FlatList, ScrollView } from "react-native";
-import { MaterialIcons } from '@expo/vector-icons';
-import {getPlayers, invertPlayerAvailability, getPlayer, displayPlayers, delAllPlayers, delPlayer} from '../extra_modules/DataStorage'
+import { MaterialIcons, AntDesign } from '@expo/vector-icons';
+import {getPlayers, invertPlayerAvailability, getPlayer} from '../extra_modules/DataStorage'
 
 function getRandomIntFromAtoB(A, B) { // does not include B
     return Math.round( A + Math.random()*(B-A) );
@@ -30,7 +30,7 @@ function PlayerContainer( {name} ) {
 
                 <Text 
                 style={styles.player_container_text}>
-                    {name}
+                    {player.pos} {"->"} {name}
                 </Text>
 
             </Pressable>}
@@ -86,46 +86,99 @@ async function sortPlayersByPos(configs) {
 
 async function raffledPlayers() {
     const configs = {GOL: 1, ZAG: 2, MEI: 2, ATA: 1};
-    
-    try {
-        let players = await sortPlayersByPos(configs);
 
-        let squads = [[], []];
+    let players = await sortPlayersByPos(configs);
 
-        for( const item in players )
-            for( let a=0; a<configs[item]; a++ ) {
-                let whichSquad = getRandomIntFromAtoB(0, 1);
-                let index = getRandomIntFromAtoB(0, players[item].length-2);
+    let squads = [[], []];
 
-                squads[whichSquad].push(players[item][index]);
-                squads[Number(!whichSquad)].push(players[item][index+1]);
+    for( const item in players )
+        for( let a=0; a<configs[item]; a++ ) {
+            let whichSquad = getRandomIntFromAtoB(0, 1);
+            let index = getRandomIntFromAtoB(0, players[item].length-2);
 
-                // avoid repeat.
-                players[item].splice(index, index+1);
-            }
-            
-        return squads;
+            squads[whichSquad].push(players[item][index]);
+            squads[Number(!whichSquad)].push(players[item][index+1]);
 
-    } catch (Error) {
-        if(Error instanceof NotSufficientPlayers)
-            alert(Error);
-        else
-            alert('Algum erro ocorreu.')
-    }
+            //avoid repeat.
+            players[item].splice(index, index+1);
+        }
+        
+    return squads;
 }
 
-function Squad( props ) {
-    const [squads, setSquads] = useState(undefined);
+function DraftedPlayer( {name} ) {
+    const [player, setPlayer] = useState();
 
-    const _setSquads = async () => {
-        const value = await raffledPlayers();
-        setSquads(value);
+    const definePlayer = async () => {
+        const value = await getPlayer(name);
+        setPlayer(value);
     };
 
-    _setSquads();
+    definePlayer();
 
     return (
-        <Text style={ {top: '40%', left: '10%' } } > DEFINED SQUAD </Text>
+        <View style={styles.drafted_player}>
+            {player &&
+            <Image style={styles.player_container_img} source={ {uri: player.imgURI} }/>}
+            <Text 
+            style={styles.drafted_player_text}>
+                {name}
+            </Text>
+        </View>
+    );
+};
+
+function Team( {squad, upper} ) {
+    const position = {
+        flex: 1/2, 
+        flexDirection: 'row', 
+        alignSelf: 'center',
+    }
+
+    const mediumRating = squad.reduce( (sum, item) => sum+item[1].rating, 0)/5;
+
+    return (
+        <View style={{flex:1/2, flexDirection: upper ? 'column' : 'column-reverse'}}>
+        <View style={position}>
+            <DraftedPlayer { ...{name: squad[0][0]} }/>
+        </View>
+
+        <View style={position}>
+            <DraftedPlayer { ...{name: squad[1][0]} }/>
+            <DraftedPlayer { ...{name: squad[2][0]} }/>
+        </View>
+
+        <View style={position}>
+            <DraftedPlayer { ...{name: squad[3][0]} }/>
+            <DraftedPlayer { ...{name: squad[4][0]} }/>
+        </View>
+        
+        <View style={position}>
+            <DraftedPlayer { ...{name: squad[5][0], left: 120, top: 300} }/>
+        </View>
+
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <MaterialIcons
+                name="star" size={30} color="rgba(255,255,0,.8)" />
+            <Text style={{fontSize: 20, fontWeight: 'bold'}}>
+                {mediumRating.toFixed(2)}
+            </Text>
+        </View>
+
+        </View>
+    );
+};
+
+function Squads( {squads} ) {
+    const [_squads, setSquads] = useState(squads);
+
+    return (
+        <View style={ {flex: 1} }>
+            {squads &&
+                <Team {...{squad: _squads[0], upper: true} } />}
+            {squads &&
+                <Team {...{squad: _squads[1], upper: false} } />}
+        </View>
     );
 }
 
@@ -134,10 +187,25 @@ export function DefineSquadScreen( {nav} ) {
 
     const [display, setDisplay] = useState(false);
     const [raffled, setRaffled] = useState(false);
+    const [squads, setSquads] = useState(undefined);
 
-    const rafflePlayers = () => {
-        setRaffled(true);
-    }
+    const rafflePlayers = async () => {
+        if(squads !== undefined) return
+
+        try {
+            const value = await raffledPlayers();
+            
+            setSquads(value);
+
+            setRaffled(true);
+
+        } catch(error ){
+            if(error instanceof NotSufficientPlayers)
+                alert(error);
+            else
+                alert('Algum erro inesperado ocorreu.');
+        }
+    };
 
     return (
         <ImageBackground
@@ -145,7 +213,7 @@ export function DefineSquadScreen( {nav} ) {
         source={require('../assets/imgs/soccer_field2.jpg')}
         opacity={.88}>
 
-            {raffled ? <Squad/> :
+            {raffled ? <Squads squads={squads}/> :
 
             <View style={styles.header}>
                 <View style={styles.buttons}>
@@ -164,9 +232,8 @@ export function DefineSquadScreen( {nav} ) {
                 </View>
 
             {display && <PlayersDisplay/>}
-            </View>
-            }
 
+            </View>}
         </ImageBackground>
     );
 };
@@ -249,4 +316,21 @@ const styles = StyleSheet.create( {
         backgroundColor: 'rgba(255, 0, 0, 1)',
         width: 20, height: 20, borderRadius: 20,
     },
+
+    drafted_player: {
+        alignSelf: 'center',
+        
+        padding: 3, margin: 10, borderRadius: 100,
+
+        justifyContent: 'center', alignItems: 'center',
+    },
+
+    drafted_player_text: {
+        fontWeight: 'bold', fontSize: 13,
+
+        alignSelf: 'center',
+
+        backgroundColor: '#fff', 
+        padding: 5, borderRadius: 5,
+    }
 } );

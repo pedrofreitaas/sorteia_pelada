@@ -76,20 +76,19 @@ export default function App() {
         <Stack.Screen
           name="CreatePlayer"
           component={CreatePlayerScreen}
-          options={ {title: 'Tela de criação de jogador'} }
+          options={ {title: 'Criação de jogador'} }
         />
 
         <Stack.Screen
           name="RaffleSquad"
           component={DefineSquadScreen}
-          options={ {title: 'Tela de sorteio de times'} }
+          options={ {title: 'Sorteio de times'} }
         />
 
         <Stack.Screen
           name="AlterPlayer"
           component={AlterPlayerScreen}
-          options={ {title: 'Tela de alteração de jogador.'} }
-        />
+          options={ {title: 'Alteração de jogador.'} }/>
 
       </Stack.Navigator>
     </NavigationContainer>);

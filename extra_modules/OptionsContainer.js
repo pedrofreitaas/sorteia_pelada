@@ -3,7 +3,10 @@ import { Text, View, FlatList, Pressable, StyleSheet } from "react-native";
 
 // container where the user can set a single option for choosing.
 export function OptionsContainer ( {props} ) {
-    const [_options, set_Options] = useState( props.options.map((opt) => [false, opt]) );
+    const [_options, set_Options] = useState( props.options.map((opt) => {
+        if(props.selected === opt) return [true, opt];
+        return [false, opt]
+    }) );
 
     const updateChosenOption = ( option ) => {
         const new_Options = _options.map( (opt) => {

@@ -1,163 +1,163 @@
-import { useEffect, useState } from 'react';
-import { Text, StyleSheet, View, ImageBackground, FlatList, Image, TextInput, Pressable } from "react-native";
-import { getPlayers, getPlayer, savePlayer } from "../extra_modules/DataStorage";
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
+import {useState} from 'react';
+import {Text, StyleSheet, View, Image, TextInput, Pressable, ImageBackground} from "react-native";
+import {Slider} from '@miblanchard/react-native-slider';
 
-function Player( {props} ) {
-    const [player, setPlayer] = useState();
+import {Players} from './DisplayPlayers';
 
-    useEffect( () => {
-        const fetchData = async () => {
-            const data = await getPlayer(props.name);
-            setPlayer(data);
-        };
-        
-        if (player === undefined) fetchData();
-    }, []);
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-    if(player === undefined) return (<Text>Loading...</Text>);
+import {OptionsContainer} from '../extra_modules/OptionsContainer';
+
+const Stack = createNativeStackNavigator();
+
+const AlterPlayer = ( {navigation, route} ) => {
+    const [name, setName] = useState(route.params.name);
+    const [pos, setPos] = useState(route.params.player.pos);
+    const [rating, setRating] = useState(route.params.player.rating);
+    const [imgURI, setImgURI] = useState(route.params.player.imgURI);
 
     return (
-        <Pressable 
-        style={styles.player}
-        onPress={ () => props.setEditing(true) }>
-            <Image
-            style={styles.player_img}
-            source={ {uri: player.imgURI} }/>
+        <ImageBackground 
+        source={require("../assets/imgs/lockerroom.jpg")}
+        style={styles.background}>
 
-            <Text style={styles.player_text}>
-                {player.pos}{'\n'}{props.name}
-            </Text>
-        </Pressable>
-    );
-}
+            <View
+            style={styles.container}>
+                <Pressable>
+                    <Image
+                    style={styles.player_img}
+                    source={{uri: imgURI}}/>
+                </Pressable>
 
-function Players( {props} ) {
-    const [playerNames, setPlayerNames] = useState();
-    const [searchPlayer, setSearchPlayer] = useState('');
+                <View>
+                    <View style={styles.player_name_input_view}>
+                        <TextInput 
+                        style={styles.player_name_input}
+                        value={name}
+                        onChangeText={setName}
+                        placeholder={"Nome"}/>
+                    </View>
 
-    const [editing, setEditing] = useState(false);
+                    <OptionsContainer
+                    props={ {
+                        options: ['GOL', 'ZAG', 'MEI', 'ATA'],
+                        setValue: (value) => setPos(value),
+                        selected: pos 
+                    } }/>
 
-    useEffect( () => {
-        const _getPlayers = async () => {
-            const value = await getPlayers();
-            const names = Object.entries(value).map( (item) => item[0] );
-            
-            if(searchPlayer === '') 
-                setPlayerNames(names);
-            
-            else{
-                const filteredNames = names.filter( (name) => name.slice(0, searchPlayer.length).toLowerCase() === searchPlayer);
-                setPlayerNames(filteredNames);
-            }
-        };
-    
-        _getPlayers();
+                    <Text style={styles.rating_text}> Nota: {Number(rating).toFixed(2)} </Text>
+                    <Slider
+                    value={rating} onValueChange={setRating}
+                    minimumValue={0} maximumValue={5}
 
-    }, [searchPlayer]);
+                    trackStyle={styles.track}
 
-    if(!editing)
-        return (
-            <View style={styles.players_view}>
-                <View
-                style={styles.search_bar_view}>  
-                    <TextInput
-                    style={styles.search_bar} 
-                    placeholder='Pesquise por jogador'
-                    value={searchPlayer}
-                    onChangeText={ (newText) => {setSearchPlayer(newText)} }/>
+                    minimumTrackTintColor="rgba(255, 255, 0, .88)"
 
-                    <MaterialIcons
-                    name="search" size={30} color="rgba(0,0,0,1)" />
+                    thumbStyle={styles.thumb}
+                    thumbImage={require('../assets/imgs/star.png')}
+                    />
+
+                    <Pressable style={styles.submit_pressable}>
+                        <Text style={styles.submit_text}> Finalizar. </Text>
+                    </Pressable>
+
                 </View>
 
-                <FlatList
-                horizontal={false} numColumns={3}
-                data={playerNames}
-                renderItem={ (data) => <Player props={ {name: data.item, setEditing: (v) => setEditing(v)} }/> }/>
             </View>
-        );
-
-    //else
-    return (
-        <View style={{flex:1}}>
-            <Pressable 
-            style={styles.go_back_button}
-            onPress={() => setEditing(false)}>
-                <AntDesign name="leftcircleo" size={30} color="rgba(0,0,0,1)" />
-            </Pressable>
-
-        </View>
-    );
-}
-
-export function AlterPlayerScreen( {nav} ) {
-    return (
-        <ImageBackground
-        source={require('../assets/imgs/lockerroom.jpg')}
-        style={styles.container}>
-
-            <Players/>
-        
         </ImageBackground>
+    );
+};
+
+export function AlterPlayerScreen() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen
+                name="Players"
+                component={Players}
+                options={{header: ()=>false}}
+            />
+
+            <Stack.Screen
+                name="Alter"
+                component={AlterPlayer}
+                options={{header: ()=>false}}
+            />
+
+        </Stack.Navigator>
     );
 }
 
 const styles = StyleSheet.create( {
-    container: {
+    background: {
         flex: 1,
     },
 
-    players_view: {
-        flex: 1, margin: '10%',
-        alignItems: 'center', justifyContent: 'center',
+    container: {
+        flex: 1, margin: '10%', padding: '5%',
 
-        width: '81%',
+        backgroundColor: 'rgba(255,255,255, .4)',
+
+        borderWidth: 5, borderColor: 'rgba(0,0,0,.3)', borderRadius: 100,
+    },
+
+    player_img: {
+        marginVertical: 30,
+
+        aspectRatio: 1,
+        width: '60%',
+
+        borderRadius: 90, borderWidth: 5, borderColor: 'rgba(0,0,0,.4)',
 
         alignSelf: 'center',
     },
 
-    search_bar_view: {
-        backgroundColor: 'rgba(255,255,255,.91)', marginVertical: 20, padding: 10,
+    player_name_input_view: {
+        margin: 5, padding: 5, marginVertical: 30,
 
-        flexDirection: 'row',
-
-        borderWidth: 6, borderColor: 'rgba(0,0,0,.3)', borderRadius: 30,
-    },
-
-    search_bar: {
-        width: '80%', marginHorizontal: 10, alignSelf: 'center',
-    },
-
-    player: {
-        margin: 5, padding: 5,
         backgroundColor: '#fff',
+        width: '80%',
 
-        borderRadius: 5,
+        alignSelf: 'center',
 
-        width: '27%', height: 80,
-
-        alignItems: 'center',
+        borderWidth: 1, borderColor: 'rgba(0,0,0,.4)', borderRadius: 5,
     },
 
-    player_img: {
-        width: 30, height: 30,
-        borderRadius: 30,
+    player_name_input: {
+        alignSelf: 'center',
     },
 
-    player_text: {
-        margin: 3,
-        fontSize: 10,
-        textAlign: 'center',
+    rating_text: {
+        fontWeight: 'bold', fontSize: 20,
+        alignSelf: 'center',
+
+        marginVertical: 30,
     },
 
-    go_back_button: {
-        margin: '10%',
-        alignItems: 'center', justifyContent: 'center',
-        backgroundColor: '#fff', 
-        width: 40, height: 40, 
-        padding: 3, 
+    thumb: {
+        width: 25, height: 25, borderRadius: 30,
+
+        backgroundColor: 'transparent'
+    },
+
+    track: {
+        height: 10,
+
+        backgroundColor: "rgba(0, 0, 0, .55)",
+
         borderRadius: 10,
     },
 
+    submit_pressable: {
+        backgroundColor: 'rgba(0,100, 255, .9)',
+        padding: 5, borderRadius: 50,
+
+        marginVertical: 30,
+
+        alignSelf: 'flex-end',
+    },
+
+    submit_text: {
+        fontSize: 20, fontWeight: 'bold',
+    },
 } );

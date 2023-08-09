@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Text, StyleSheet, View, Pressable, ImageBackground, Image, FlatList, ScrollView } from "react-native";
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import {getPlayers, invertPlayerAvailability, getPlayer} from '../extra_modules/DataStorage'
 
 function getRandomIntFromAtoB(A, B) { // does not include B
@@ -182,9 +182,7 @@ function Squads( {squads} ) {
     );
 }
 
-export function DefineSquadScreen( {nav} ) {
-    nav.goBackHardwareEventTrigger();
-
+export function DefineSquadScreen() {
     const [display, setDisplay] = useState(false);
     const [raffled, setRaffled] = useState(false);
     const [squads, setSquads] = useState(undefined);

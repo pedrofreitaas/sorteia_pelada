@@ -108,10 +108,8 @@ function Info ( props ) {
     );
 }
 
-export function CreatePlayerScreen( {nav} ) {
+export function CreatePlayerScreen() {
     const backImg = require('../assets/imgs/create_player_backg.jpg');
-
-    nav.goBackHardwareEventTrigger();
 
     return (
         <ImageBackground

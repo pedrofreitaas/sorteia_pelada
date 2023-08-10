@@ -1,5 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+let lastUpdate = undefined;
+const updateLastUpdate = () => {
+    lastUpdate = Date.now().toLocaleString();
+}
+
 function _removeWhiteSpaces( str ) {
     if(typeof str !== typeof "") throw TypeError;
 
@@ -9,16 +14,25 @@ function _removeWhiteSpaces( str ) {
     return str;
 }
 
+export const isUpToDate = ( lastGetTime ) => {
+    return (lastGetTime === lastUpdate || lastUpdate === undefined);
+}
+
 export const getPlayers = async () => {
     const key = 'players';
 
     const value = await AsyncStorage.getItem(key);
 
-    return JSON.parse(value);
+    return {
+        lastUpd_timestamp: lastUpdate,
+        result: JSON.parse(value),
+    };
 }
 
 const _savePlayer = async ( name, rating, pos, imgURI, available=false ) => {
-    let players = await getPlayers();
+    let data = await getPlayers();
+
+    let players = data.result;
 
     if(players === null) players = {};
 
@@ -30,19 +44,29 @@ const _savePlayer = async ( name, rating, pos, imgURI, available=false ) => {
     };
 
     const key = 'players';
+
     await AsyncStorage.setItem(key, JSON.stringify(players));
+    updateLastUpdate();
 };
 
 export const getPlayer = async (name) => {
-    let players = await getPlayers();
+    const data = await getPlayers();
+    const players = data.result;
 
     if(players === null) return undefined;
 
-    return players[name];
+    return {
+        lastUpd_timestamp: lastUpdate,
+        result: players[name],
+    };
 }
 
-export const savePlayer = async ( name, rating, pos, imgURI, available ) => {
-    if(await getPlayer(name) !== undefined) {
+export const savePlayer = async ( name, rating, pos, imgURI, available=false ) => {
+    const data = await getPlayer(name);
+
+    const player = data.result;
+    
+    if(player !== undefined) {
         alert('Jogador já existe no sistema.')
         return;
     }
@@ -56,27 +80,44 @@ export const savePlayer = async ( name, rating, pos, imgURI, available ) => {
 }
 
 export const displayPlayers = async () => {
-    console.log( await getPlayers() );
+    const players = await getPlayers(); 
+    console.log( 'Last update ->', players.lastUpd_timestamp, ": ", players.result );
 }
 
-export const changePlayer = async ( name, rating, pos, imgURI, available=false ) => {
-    let players = await getPlayers();
-    
-    if( players[name] === undefined ) return false;
+class CouldntDeletePlayer extends Error {
+    constructor(player){
+        super(`Couldn't delete player: ${player}.`)
+    }
+}
 
-    await _savePlayer(name, rating, pos, imgURI, available);
+export const changePlayer = async ( oldName, newName, newRating, newPos, newImgURI, newAvailable=false ) => {
+    const data = await getPlayers();
+
+    const players = data.result;
+    
+    if( players[oldName] === undefined ) return false;
+    
+    const deleted = await delPlayer(oldName);
+
+    if(!deleted) throw new CouldntDeletePlayer(oldName);
+
+    await _savePlayer(newName, newRating, newPos, newImgURI, newAvailable);
 
     return true;
 }
 
 export const invertPlayerAvailability = async ( name ) => {
-    let player = await getPlayer(name);
+    const data = await getPlayer(name);
+
+    const player = data.result;
     
     return await _savePlayer(name, player.rating, player.pos, player.imgURI, !player.available);
 }
 
 export const delPlayer = async ( name ) => {
-    let players = await getPlayers();
+    const data = await getPlayers();
+
+    let players = data.result;
 
     if (players[name] === undefined) return false;
     
@@ -85,6 +126,8 @@ export const delPlayer = async ( name ) => {
     const key = 'players';
     await AsyncStorage.setItem(key, JSON.stringify(players));
 
+    updateLastUpdate();
+
     return true;
 }
 
@@ -92,4 +135,6 @@ export const delAllPlayers = async () => {
     const key = 'players';
 
     await AsyncStorage.removeItem(key);
+
+    updateLastUpdate();
 }

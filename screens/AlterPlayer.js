@@ -7,6 +7,7 @@ import {Players} from './DisplayPlayers';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {OptionsContainer} from '../extra_modules/OptionsContainer';
+import {changePlayer} from '../extra_modules/DataStorage';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +16,13 @@ const AlterPlayer = ( {navigation, route} ) => {
     const [pos, setPos] = useState(route.params.player.pos);
     const [rating, setRating] = useState(route.params.player.rating);
     const [imgURI, setImgURI] = useState(route.params.player.imgURI);
+
+    const submit = async () => {
+        const success = await changePlayer(route.params.name, name, rating, pos, imgURI, route.params.player.available);
+        
+        if(success) alert('Jogador alterado com sucesso.');
+        else alert('Erro: Jogador não foi alterado.')
+    };
 
     return (
         <ImageBackground 
@@ -58,7 +66,9 @@ const AlterPlayer = ( {navigation, route} ) => {
                     thumbImage={require('../assets/imgs/star.png')}
                     />
 
-                    <Pressable style={styles.submit_pressable}>
+                    <Pressable 
+                    style={styles.submit_pressable}
+                    onPress={submit}>
                         <Text style={styles.submit_text}> Finalizar. </Text>
                     </Pressable>
 

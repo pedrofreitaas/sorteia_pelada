@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, ImageBackground, FlatList, Image, TextInput, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { getPlayers, getPlayer } from "../extra_modules/DataStorage";
+import { getPlayers, getPlayer, isUpToDate } from "../extra_modules/DataStorage";
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -16,7 +16,8 @@ function Player( {name} ) {
     useEffect( () => {
         const fetchData = async () => {
             const data = await getPlayer(name);
-            setPlayer(data);
+            const player = data.result;
+            setPlayer(player);
         };
         
         if (player === undefined) fetchData();
@@ -43,10 +44,13 @@ export function Players( {props} ) {
     const [playerNames, setPlayerNames] = useState();
     const [searchPlayer, setSearchPlayer] = useState('');
 
+
     useEffect( () => {
         const _getPlayers = async () => {
-            const value = await getPlayers();
-            const names = Object.entries(value).map( (item) => item[0] );
+            const data = await getPlayers();
+            const players = data.result;
+
+            const names = Object.entries(players).map( (item) => item[0] );
             
             if(searchPlayer === '') 
                 setPlayerNames(names);

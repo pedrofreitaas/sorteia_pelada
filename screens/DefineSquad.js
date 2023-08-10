@@ -11,8 +11,10 @@ function PlayerContainer( {name} ) {
     const [player, setPlayer] = useState();
 
     const definePlayer = async () => {
-        const value = await getPlayer(name);
-        setPlayer(value);
+        const data = await getPlayer(name);
+        const player = data.result;
+
+        setPlayer(player);
     };
 
     definePlayer();
@@ -42,9 +44,11 @@ function PlayersDisplay() {
     const playerNames = []
     
     const getPlayersNameListFromStorage = async () => {
-        const value = await getPlayers();
+        const data = await getPlayers();
+
+        const players = data.result;
         
-        for(const player in value) playerNames.push(player);
+        for(const player in players) playerNames.push(player);
     };
 
     getPlayersNameListFromStorage();
@@ -67,14 +71,24 @@ class NotSufficientPlayers extends Error{
 }
 
 async function sortPlayersByPos(configs) {
-    const players = Object.entries( await getPlayers()); 
+    const data = await getPlayers();
 
-    const positions = ['GOL', 'ZAG', 'MEI', 'ATA'];
+    const players = Object.entries( data.result );
 
-    let playersSortedByPos = {}
+    let playersSortedByPos = {
+        'GOL': [], 'ZAG': [], 'MEI': [], 'ATA': [],
+    };
 
-    for(const pos of positions) {
-        playersSortedByPos[pos] = players.filter( (item) => item[1].pos === pos && item[1].available );
+    // separating players by pos.
+    for(const idx in players) {
+        var infos = players[idx][1];
+
+        if(infos.available)
+            playersSortedByPos[infos.pos].push(players[idx]); 
+    }
+
+    // ordering and verifying if there are the mininum amount of players.
+    for(const pos in playersSortedByPos) {
         playersSortedByPos[pos].sort( (item1, item2) => item1[1].rating - item2[1].rating );
 
         if(playersSortedByPos[pos].length < configs[pos]*2)
@@ -87,20 +101,21 @@ async function sortPlayersByPos(configs) {
 async function raffledPlayers() {
     const configs = {GOL: 1, ZAG: 2, MEI: 2, ATA: 1};
 
-    let players = await sortPlayersByPos(configs);
+    let playersByPos = await sortPlayersByPos(configs);
 
     let squads = [[], []];
 
-    for( const item in players )
+    // sorting players distribuition for each squad.
+    for( const item in playersByPos )
         for( let a=0; a<configs[item]; a++ ) {
             let whichSquad = getRandomIntFromAtoB(0, 1);
-            let index = getRandomIntFromAtoB(0, players[item].length-2);
+            let index = getRandomIntFromAtoB(0, playersByPos[item].length-2);
 
-            squads[whichSquad].push(players[item][index]);
-            squads[Number(!whichSquad)].push(players[item][index+1]);
+            squads[whichSquad].push(playersByPos[item][index]);
+            squads[Number(!whichSquad)].push(playersByPos[item][index+1]);
 
             //avoid repeat.
-            players[item].splice(index, index+1);
+            playersByPos[item].splice(index, index+1);
         }
         
     return squads;
@@ -110,8 +125,9 @@ function DraftedPlayer( {name} ) {
     const [player, setPlayer] = useState();
 
     const definePlayer = async () => {
-        const value = await getPlayer(name);
-        setPlayer(value);
+        const data = await getPlayer(name);
+        const player = data.result;
+        setPlayer(player);
     };
 
     definePlayer();

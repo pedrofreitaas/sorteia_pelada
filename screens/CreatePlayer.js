@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { View, Image, FlatList, Text, TextInput, StyleSheet, ImageBackground, Pressable, se } from "react-native";
+import { useState } from "react";
+import { View, Image, FlatList, Text, TextInput, StyleSheet, ImageBackground, Pressable } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import {Slider} from '@miblanchard/react-native-slider';
 import {savePlayer} from '../extra_modules/DataStorage'
@@ -25,12 +25,14 @@ function Form ( props ) {
     };
 
     const submit = async () => {
-        if(name===null || rating===false || pos === undefined || image === undefined ){
+        if(name===null || rating===false || pos === undefined){
             alert('Faltam campos a serem preenchidos. Consulte o ícone acima para mais informações.')
             return;
-        }   
+        }
         
         await savePlayer(name, rating[0], pos, image);
+
+        if(image === undefined) alert('Jogador foi definido com imagem genérica.');
     };
 
     return (

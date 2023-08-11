@@ -1,8 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NativeEventEmitter } from 'react-native';
+
+const evHandler = new NativeEventEmitter();
 
 let lastUpdate = undefined;
 const updateLastUpdate = () => {
     lastUpdate = Date.now().toLocaleString();
+
+    evHandler.emit('updated_DB');
 }
 
 function _removeWhiteSpaces( str ) {
@@ -137,4 +142,14 @@ export const delAllPlayers = async () => {
     await AsyncStorage.removeItem(key);
 
     updateLastUpdate();
+}
+
+export const getPlayerNames = async () => {
+    const data = await getPlayers();
+    const players = data.result;
+
+    return {
+        lastUpd_timestamp: lastUpdate,
+        result: Object.entries(players).map( (item) => item[0] ),
+    };
 }

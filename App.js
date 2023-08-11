@@ -4,11 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 
 import {NotDefinedScreen} from './screens/ErrorScreen.js'
 import {AlterPlayerScreen} from './screens/AlterPlayer.js'
-import {DefineSquadScreen} from './screens/DefineSquad'
-import {CreatePlayerScreen} from './screens/CreatePlayer'
+import {Squads} from './screens/DefineSquad'
+import {CreatePlayerScreen} from './screens/CreatePlayer';
+import {Players} from './screens/DisplayPlayers.js';
 
 import { ImageBackground, Text, View, StyleSheet, Pressable } from 'react-native';
-import { displayPlayers, delAllPlayers } from './extra_modules/DataStorage.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,7 +33,7 @@ const MainScreen = () => {
         <Pressable 
         style={styles.main_button}
         onPress={ () => {
-          nav.navigate('RaffleSquad', {});
+          nav.navigate('DisplayPlayers', {sortButton: true});
         } }> 
           <Text> Sortear. </Text>
         </Pressable>
@@ -41,19 +41,9 @@ const MainScreen = () => {
         <Pressable 
         style={styles.main_button}
         onPress={ () => {
-          nav.navigate('AlterPlayer', {});
+          nav.navigate('DisplayPlayers', {});
         } }> 
           <Text> Alterar jogador. </Text>
-        </Pressable>
-
-        <Pressable
-        onPress={displayPlayers}>
-          <Text style={{backgroundColor: '#fff', fontWeight: 'bold'}}> PRESS TO DISPLAY ALL PLAYERS </Text>
-        </Pressable>
-
-        <Pressable
-        onPress={delAllPlayers}>
-          <Text style={{backgroundColor: '#fff', fontWeight: 'bold', marginTop: 20}}> PRESS TO DELETE ALL PLAYERS </Text>
         </Pressable>
 
       </View>
@@ -80,10 +70,15 @@ export default function App() {
         />
 
         <Stack.Screen
-          name="RaffleSquad"
-          component={DefineSquadScreen}
+          name="Squads"
+          component={Squads}
           options={ {title: 'Sorteio de times'} }
         />
+
+        <Stack.Screen
+          name="DisplayPlayers"
+          component={Players}
+          options={ {title: 'Escolha de jogador.'} }/>
 
         <Stack.Screen
           name="AlterPlayer"

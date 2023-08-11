@@ -2,24 +2,38 @@ import {useState} from 'react';
 import {Text, StyleSheet, View, Image, TextInput, Pressable, ImageBackground} from "react-native";
 import {Slider} from '@miblanchard/react-native-slider';
 
-import {Players} from './DisplayPlayers';
-
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {OptionsContainer} from '../extra_modules/OptionsContainer';
 import {changePlayer} from '../extra_modules/DataStorage';
+import { useNavigation } from '@react-navigation/native';
+
+import { MaterialIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
 const Stack = createNativeStackNavigator();
 
-const AlterPlayer = ( {navigation, route} ) => {
+export const AlterPlayerScreen = ( {nav, route} ) => {
     const [name, setName] = useState(route.params.name);
-    const [pos, setPos] = useState(route.params.player.pos);
-    const [rating, setRating] = useState(route.params.player.rating);
-    const [imgURI, setImgURI] = useState(route.params.player.imgURI);
+    const [pos, setPos] = useState(route.params.pos);
+    const [rating, setRating] = useState(route.params.rating);
+    const [imgURI, setImgURI] = useState(route.params.imgURI);
+    const [available, setAvailable] = useState(route.params.available);
+
+    const setPlayerImg = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.image,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) setImgURI(result.assets[0].uri);
+    };
 
     const submit = async () => {
-        const success = await changePlayer(route.params.name, name, rating, pos, imgURI, route.params.player.available);
-        
+        const success = await changePlayer(route.params.name, name, rating, pos, imgURI, available);
+
         if(success) alert('Jogador alterado com sucesso.');
         else alert('Erro: Jogador não foi alterado.')
     };
@@ -31,10 +45,17 @@ const AlterPlayer = ( {navigation, route} ) => {
 
             <View
             style={styles.container}>
-                <Pressable>
+                <Pressable
+                onPress={setPlayerImg}>
                     <Image
                     style={styles.player_img}
-                    source={{uri: imgURI}}/>
+                    source={ imgURI === undefined ? require('../assets/imgs/generic_player.jpg') : {uri: imgURI} }/>
+                </Pressable>
+
+                <Pressable
+                onPress={() => setAvailable(!available)}
+                style={{alignSelf: 'flex-end'}}>
+                    <MaterialIcons name="check-circle-outline" size={45} color={available ? "rgba(0,180,0,.99)" : "rgba(220,0,0,.99)"} />
                 </Pressable>
 
                 <View>
@@ -55,7 +76,7 @@ const AlterPlayer = ( {navigation, route} ) => {
 
                     <Text style={styles.rating_text}> Nota: {Number(rating).toFixed(2)} </Text>
                     <Slider
-                    value={rating} onValueChange={setRating}
+                    value={rating} onValueChange={ (e)=> {setRating(e[0])} }
                     minimumValue={0} maximumValue={5}
 
                     trackStyle={styles.track}
@@ -71,32 +92,12 @@ const AlterPlayer = ( {navigation, route} ) => {
                     onPress={submit}>
                         <Text style={styles.submit_text}> Finalizar. </Text>
                     </Pressable>
-
                 </View>
 
             </View>
         </ImageBackground>
     );
 };
-
-export function AlterPlayerScreen() {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen
-                name="Players"
-                component={Players}
-                options={{header: ()=>false}}
-            />
-
-            <Stack.Screen
-                name="Alter"
-                component={AlterPlayer}
-                options={{header: ()=>false}}
-            />
-
-        </Stack.Navigator>
-    );
-}
 
 const styles = StyleSheet.create( {
     background: {
@@ -114,8 +115,7 @@ const styles = StyleSheet.create( {
     player_img: {
         marginVertical: 30,
 
-        aspectRatio: 1,
-        width: '60%',
+        width: 150, height: 150,
 
         borderRadius: 90, borderWidth: 5, borderColor: 'rgba(0,0,0,.4)',
 

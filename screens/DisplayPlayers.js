@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Text, StyleSheet, View, ImageBackground, FlatList, Image, TextInput, Pressable } from "react-native";
+import { Text, StyleSheet, View, ImageBackground, FlatList, TextInput, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { getPlayers, getPlayer, isUpToDate } from "../extra_modules/DataStorage";
@@ -8,42 +8,13 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
-function Player( {name} ) {
-    const [player, setPlayer] = useState();
+import {Player} from './Player';
 
-    const nav = useNavigation();
-
-    useEffect( () => {
-        const fetchData = async () => {
-            const data = await getPlayer(name);
-            const player = data.result;
-            setPlayer(player);
-        };
-        
-        if (player === undefined) fetchData();
-    }, []);
-
-    if(player === undefined) return (<Text>Loading...</Text>);
-
-    return (
-        <Pressable 
-        style={styles.player}
-        onPress={ () => nav.navigate('Alter', {name, player}) }>
-            <Image
-            style={styles.player_img}
-            source={ {uri: player.imgURI} }/>
-
-            <Text style={styles.player_text}>
-                {player.pos}{'\n'}{name}
-            </Text>
-        </Pressable>
-    );
-};
-
-export function Players( {props} ) {
+export function Players( {navigation, route} ) {
     const [playerNames, setPlayerNames] = useState();
     const [searchPlayer, setSearchPlayer] = useState('');
 
+    const nav = useNavigation();
 
     useEffect( () => {
         const _getPlayers = async () => {
@@ -70,6 +41,15 @@ export function Players( {props} ) {
         source={require('../assets/imgs/lockerroom.jpg')}
         style={styles.container}>
             <View style={styles.players_view}>
+
+                {route.params.sortButton===true 
+                ? <Pressable
+                style={styles.raffle_button}
+                onPress={ () => nav.navigate('Squads', {}) }>
+                    <Text>Sortear</Text>
+                </Pressable> 
+                : <View></View>}
+
                 <View
                 style={styles.search_bar_view}>  
                     <TextInput
@@ -95,6 +75,22 @@ const styles = StyleSheet.create( {
     container: {
         flex: 1,
     },
+
+    raffle_button: {
+        backgroundColor: '#fff',
+        alignItems: 'center', justifyContent: 'center',
+        width: 80, height: 35,
+        borderRadius: 10,
+
+        borderWidth: 2, borderColor: '#eff',
+
+        marginLeft: 20, marginRight: 10,
+
+        alignSelf: 'flex-end',
+
+        borderWidth: 3, borderColor: 'rgba(0,0,0, .99)',
+    },
+
 
     players_view: {
         flex: 1, margin: '10%',
@@ -137,15 +133,6 @@ const styles = StyleSheet.create( {
         margin: 3,
         fontSize: 10,
         textAlign: 'center',
-    },
-
-    go_back_button: {
-        margin: '10%',
-        alignItems: 'center', justifyContent: 'center',
-        backgroundColor: '#fff', 
-        width: 40, height: 40, 
-        padding: 3, 
-        borderRadius: 10,
     },
 
 } );

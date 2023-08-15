@@ -1,13 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NativeEventEmitter } from 'react-native';
 
+import { NativeEventEmitter } from 'react-native';
 const evHandler = new NativeEventEmitter();
 
 let lastUpdate = undefined;
 const updateLastUpdate = () => {
     lastUpdate = Date.now().toLocaleString();
-
-    evHandler.emit('updated_DB');
 }
 
 function _removeWhiteSpaces( str ) {
@@ -34,6 +32,18 @@ export const getPlayers = async () => {
     };
 }
 
+export class SavedPlayerWithGenericImage extends Error {
+    constructor() {
+        super('Player was saved with generic image.');
+    }
+};
+
+export class PlayerAlreadyExists extends Error {
+    constructor(name) {
+        super(`Player with the name: ${name} already exists in the system.`);
+    }
+};
+
 const _savePlayer = async ( name, rating, pos, imgURI, available=false ) => {
     let data = await getPlayers();
 
@@ -52,6 +62,9 @@ const _savePlayer = async ( name, rating, pos, imgURI, available=false ) => {
 
     await AsyncStorage.setItem(key, JSON.stringify(players));
     updateLastUpdate();
+
+    if(imgURI === undefined)
+        throw new SavedPlayerWithGenericImage();
 };
 
 export const getPlayer = async (name) => {
@@ -72,15 +85,13 @@ export const savePlayer = async ( name, rating, pos, imgURI, available=false ) =
     const player = data.result;
     
     if(player !== undefined) {
-        alert('Jogador já existe no sistema.')
-        return;
+        throw new PlayerAlreadyExists(name);
     }
 
     try {
         await _savePlayer(name, rating, pos, imgURI, available);
-        alert('Jogador cadastrado com sucesso.');
     } catch(error) {
-        alert('Algum erro ocorreu.');
+        throw error;
     }
 }
 
@@ -106,17 +117,12 @@ export const changePlayer = async ( oldName, newName, newRating, newPos, newImgU
 
     if(!deleted) throw new CouldntDeletePlayer(oldName);
 
-    await _savePlayer(newName, newRating, newPos, newImgURI, newAvailable);
-
-    return true;
-}
-
-export const invertPlayerAvailability = async ( name ) => {
-    const data = await getPlayer(name);
-
-    const player = data.result;
-    
-    return await _savePlayer(name, player.rating, player.pos, player.imgURI, !player.available);
+    try {
+        await _savePlayer(newName, newRating, newPos, newImgURI, newAvailable);
+        return true;
+    } catch (err) {
+        throw err;
+    }
 }
 
 export const delPlayer = async ( name ) => {

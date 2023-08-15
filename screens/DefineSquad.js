@@ -67,34 +67,33 @@ async function raffledPlayers() {
 }
 
 function Team( {squad, upper} ) {
-    const position = {
-        flex: 1/2, 
-        flexDirection: 'row', 
-        alignSelf: 'center',
-    }
-
     const mediumRating = squad.reduce( (sum, item) => sum+item[1].rating, 0) / 6;
 
     return (
-        <View style={{flex:1/2, flexDirection: upper ? 'column' : 'column-reverse'}}>
-            <View style={position}><Player name={squad[0][0]}/></View>
+        <View 
+        style={{
+            flex: 1/1.5,
+            flexDirection: upper ? 'column' : 'column-reverse',
+        }}>
+            <View style={styles.position}><Player name={squad[0][0]}/></View>
 
-            <View style={position}><Player name={squad[1][0]}/><Player name={squad[2][0]}/></View>
+            <View style={styles.position}><Player name={squad[1][0]}/><Player name={squad[2][0]}/></View>
 
-            <View style={position}><Player name={squad[3][0]}/><Player name={squad[4][0]}/></View>
+            <View style={styles.position}><Player name={squad[3][0]}/><Player name={squad[4][0]}/></View>
             
-            <View style={position}><Player name={squad[5][0]}/></View>
+            <View style={styles.team_end}>
+                <View style={styles.team_rating}>
+                    <MaterialIcons name="star" size={30} color="rgba(255,255,0,.96)" />
+                    <Text style={styles.team_rating_text}>{mediumRating.toFixed(2)}</Text>
+                </View>
 
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <MaterialIcons name="star" size={30} color="rgba(255,255,0,.8)" />
-
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>{mediumRating.toFixed(2)}</Text>
+                <Player name={squad[5][0]}/>
             </View>
         </View>
     );
 };
 
-export const Squads = ( {props} ) => {
+export const Squads = ( {navigation, route} ) => {
     const [squads, setSquads] = useState(undefined);
 
     useEffect( () => {
@@ -126,7 +125,10 @@ export const Squads = ( {props} ) => {
             <Pressable
             onPress={() => setSquads(undefined)}
             style={styles.raffle_button}>
-                <Text>Sortear</Text>
+                <Text
+                style={styles.raffle_button_text}>
+                    Sortear
+                </Text>
             </Pressable>
 
             {squads && <Team {...{squad: squads[1], upper: false} } />}
@@ -140,58 +142,48 @@ const styles = StyleSheet.create( {
     },
 
     raffle_button: {
-        backgroundColor: '#fff',
+        position: 'absolute', top: '50%',
+
+        backgroundColor: 'rgba(255,255,255,.85)',
+
         alignItems: 'center', justifyContent: 'center',
-        width: 80, height: 35,
-        borderRadius: 10,
 
-        borderWidth: 2, borderColor: '#eff',
+        borderWidth: 5, borderColor: 'rgba(0,0,0,.3)', borderRadius: 20,
 
-        marginLeft: 20, marginRight: 10,
+        marginLeft: 20, marginRight: 10, padding: 10,
 
         alignSelf: 'flex-end',
     },
 
-    players_display: {        
-        alignSelf: 'center',
-
-        backgroundColor: 100,
-        padding: 10,
-
-        width: 420, height: 120,
+    raffle_button_text: {
+        fontSize: 16, fontWeight: 'bold',
     },
 
-    player_container: {
-        margin: 5, padding: 10,
-
-        backgroundColor: '#fff',
-    },
-
-    player_container_img: {
-        backgroundColor: '#f0f',
-        width: 50, height: 50, borderRadius: 50,
-
+    position: {
+        flex: 1/2,
+        flexDirection: 'row',
         alignSelf: 'center',
     },
 
-    player_container_text: {
-        fontSize: 15, fontWeight: 'bold',
-
-        alignSelf: "center",
-        marginTop: 5,
+    team_end: {    
+        flex: 1/2,
+        flexDirection: 'row',
     },
 
-    player_available: {
-        position: 'absolute',
-        top: '10%', left: '10%',
-        backgroundColor: 'rgba(0, 255, 0, 1)',
-        width: 20, height: 20, borderRadius: 20,
+    team_rating: {       
+        height: 50, 
+        flexDirection: 'row',
+
+        marginRight: '10%',
+
+        backgroundColor: 'rgba(255,255,255, .3)', padding: 5,
+
+        borderWidth: 5, borderColor: 'rgba(0,0,0,.3)', borderRadius: 20,
+
+        alignSelf: 'flex-start',
     },
 
-    player_unavailable: {
-        position: 'absolute',
-        top: '10%', left: '10%',
-        backgroundColor: 'rgba(255, 0, 0, 1)',
-        width: 20, height: 20, borderRadius: 20,
+    team_rating_text: {
+        fontSize: 20, fontWeight: 'bold',
     },
 } );

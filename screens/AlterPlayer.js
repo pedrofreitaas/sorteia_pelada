@@ -5,20 +5,24 @@ import {Slider} from '@miblanchard/react-native-slider';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {OptionsContainer} from '../extra_modules/OptionsContainer';
-import {changePlayer} from '../extra_modules/DataStorage';
+import {PlayerAlreadyExists, SavedPlayerWithGenericImage, changePlayer, delPlayer} from '../extra_modules/DataStorage';
 import { useNavigation } from '@react-navigation/native';
 
 import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 
+import { Info } from '../extra_modules/Info';
+
 const Stack = createNativeStackNavigator();
 
-export const AlterPlayerScreen = ( {nav, route} ) => {
+export const AlterPlayerScreen = ( {navigation, route} ) => {
     const [name, setName] = useState(route.params.name);
     const [pos, setPos] = useState(route.params.pos);
     const [rating, setRating] = useState(route.params.rating);
     const [imgURI, setImgURI] = useState(route.params.imgURI);
     const [available, setAvailable] = useState(route.params.available);
+
+    const nav = useNavigation();
 
     const setPlayerImg = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -31,20 +35,53 @@ export const AlterPlayerScreen = ( {nav, route} ) => {
         if (!result.canceled) setImgURI(result.assets[0].uri);
     };
 
-    const submit = async () => {
-        const success = await changePlayer(route.params.name, name, rating, pos, imgURI, available);
+    const deletePlayer = async () => {
+        try {
+            await delPlayer(name);
+            alert('Jogador deletado com sucesso.');
+            nav.goBack();
+        } catch (err) {
+            alert(err);
+        }
+    };
 
-        if(success) alert('Jogador alterado com sucesso.');
-        else alert('Erro: Jogador não foi alterado.')
+    const submit = async () => {
+        try {
+            await changePlayer(route.params.name, name, rating, pos, imgURI, available);
+            alert('Jogador alterado com sucesso.');
+        } catch (err) {
+            if(err instanceof PlayerAlreadyExists)
+                alert('Jogador com mesmo nome já existe no sistema.');
+            else if (err instanceof SavedPlayerWithGenericImage)
+                alert('Jogador foi salvo com imagem genérica.');
+            else 
+                alert('Jogador não foi alterado por erro inesperado: ' + err);
+        }
     };
 
     return (
         <ImageBackground 
         source={require("../assets/imgs/lockerroom.jpg")}
         style={styles.background}>
+            <Info props={{
+                info: ["Essa é a tela de edição de jogador.",
+                       "Pressione o (X) vermelho para deletar o jogador imediatamente.",
+                       "Pressione a imagem para alterar a imagem do jogador.",
+                       "Pressione o ícone abaixo da imagem para tornar o jogador disponível/indisponível para sorteio.",
+                       "Altere os outros campos da maneira que preferir.",
+                       "Quando terminar, clique em Finalizar para alterar o jogador.",
+                ],
+            }}/>
 
             <View
             style={styles.container}>
+
+                <Pressable
+                style={styles.delete_button}
+                onPress={() => deletePlayer(name)}>
+                    <MaterialIcons name="cancel" size={45} color={"rgba(220,20,0,.99)"} />
+                </Pressable>
+
                 <Pressable
                 onPress={setPlayerImg}>
                     <Image
@@ -112,10 +149,14 @@ const styles = StyleSheet.create( {
         borderWidth: 5, borderColor: 'rgba(0,0,0,.3)', borderRadius: 100,
     },
 
-    player_img: {
-        marginVertical: 30,
+    delete_button: {
+        alignSelf: 'flex-end', marginRight: 30,
+    },
 
-        width: 150, height: 150,
+    player_img: {
+        marginBottom: 20,
+
+        width: 130, height: 130,
 
         borderRadius: 90, borderWidth: 5, borderColor: 'rgba(0,0,0,.4)',
 

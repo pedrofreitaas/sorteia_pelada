@@ -10,24 +10,33 @@ import {Players} from './screens/DisplayPlayers.js';
 
 import { ImageBackground, Text, View, StyleSheet, Pressable } from 'react-native';
 
+import { FontAwesome } from '@expo/vector-icons';
+
 const Stack = createNativeStackNavigator();
 
-const MainScreen = () => {
+const MainScreen = ( {navigation, route} ) => {
   const backImg = require('./assets/imgs/soccer_field.jpg');
 
   const nav = useNavigation();
 
   return (
     <ImageBackground source={backImg} style={styles.backImg}>
-      <View style={styles.container}>
+      
+      <View
+      style={styles.title_view}>
         <Text style={styles.main_title}> Sorteia pelada </Text>
-        
+        <FontAwesome name="soccer-ball-o" size={30} color="rgba(0,0,0,.7)"/>
+      </View>
+      
+      <View style={styles.container}>  
         <Pressable 
         style={styles.main_button}
         onPress={ () => {
           nav.navigate('CreatePlayer', {});
         } }> 
-          <Text> Cadastrar jogador. </Text>
+          <FontAwesome name="user" size={20} color="rgba(0,0,0,.7)"/>
+          <Text
+          style={styles.main_button_text}> Cadastrar jogador </Text>
         </Pressable>
         
         <Pressable 
@@ -35,7 +44,9 @@ const MainScreen = () => {
         onPress={ () => {
           nav.navigate('DisplayPlayers', {sortButton: true});
         } }> 
-          <Text> Sortear. </Text>
+          <FontAwesome name="group" size={20} color="rgba(0,0,0,.7)"/>
+          <Text
+          style={styles.main_button_text}> Sortear </Text>
         </Pressable>
         
         <Pressable 
@@ -43,7 +54,9 @@ const MainScreen = () => {
         onPress={ () => {
           nav.navigate('DisplayPlayers', {});
         } }> 
-          <Text> Alterar jogador. </Text>
+          <FontAwesome name="edit" size={20} color="rgba(0,0,0,.7)"/>
+          <Text
+          style={styles.main_button_text}> Alterar jogador </Text>
         </Pressable>
 
       </View>
@@ -97,27 +110,35 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center', alignItems: 'center',
+    justifyContent: 'center', alignItems: 'flex-start',
+  },
+
+  title_view: {
+    alignItems: 'center',
   },
 
   main_title: {
-    position: 'absolute',
-    
-    left: 20, top: 150,
-
-    width: 'auto',
-    fontSize: 40,
-    marginBottom: 40,
+    marginTop: 60, marginBottom: 10,
+    fontSize: 40, fontWeight: 'bold',
   },
 
   main_button: {
-    margin: 10, padding: 5,
-    backgroundColor: '#4ec',
+    margin: 25, padding: 10, marginLeft: 30,
+    backgroundColor: 'rgba(255,255,255, .8)', 
+
+    borderWidth: 3, borderColor: 'rgba(0,0,0,.4)', borderRadius: 20,
+
     alignItems: 'center', justifyContent: 'center',
-    borderRadius: 10,
+
+    flexDirection: 'row',
+  },
+
+  main_button_text: {
+    marginLeft: 5,
+    fontSize: 20, fontWeight: 'bold',
   },
 
   backImg: {
-    width: '100%', height: '100%',
+    flex: 1,
   }
 });

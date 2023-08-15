@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, ImageBackground, FlatList, TextInput, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { getPlayers, getPlayer, isUpToDate } from "../extra_modules/DataStorage";
+import { getPlayers } from "../extra_modules/DataStorage";
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -16,11 +16,11 @@ export function Players( {navigation, route} ) {
 
     const nav = useNavigation();
 
-    useEffect( () => {
+    useEffect( () => {    
         const _getPlayers = async () => {
             const data = await getPlayers();
             const players = data.result;
-
+    
             const names = Object.entries(players).map( (item) => item[0] );
             
             if(searchPlayer === '') 
@@ -31,8 +31,10 @@ export function Players( {navigation, route} ) {
                 setPlayerNames(filteredNames);
             }
         };
-    
-        _getPlayers();
+
+        if(playerNames === undefined) {
+            _getPlayers();
+        }
 
     }, [searchPlayer]);
 
@@ -91,12 +93,9 @@ const styles = StyleSheet.create( {
         borderWidth: 3, borderColor: 'rgba(0,0,0, .99)',
     },
 
-
     players_view: {
         flex: 1, margin: '10%',
-        alignItems: 'center', justifyContent: 'center',
-
-        width: '81%',
+        justifyContent: 'center',
 
         alignSelf: 'center',
     },
@@ -111,28 +110,6 @@ const styles = StyleSheet.create( {
 
     search_bar: {
         width: '80%', marginHorizontal: 10, alignSelf: 'center',
-    },
-
-    player: {
-        margin: 5, padding: 5,
-        backgroundColor: '#fff',
-
-        borderRadius: 5,
-
-        width: '27%', height: 80,
-
-        alignItems: 'center',
-    },
-
-    player_img: {
-        width: 30, height: 30,
-        borderRadius: 30,
-    },
-
-    player_text: {
-        margin: 3,
-        fontSize: 10,
-        textAlign: 'center',
     },
 
 } );

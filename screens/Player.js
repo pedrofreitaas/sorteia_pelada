@@ -2,14 +2,11 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { getPlayer, isUpToDate } from "../extra_modules/DataStorage";
+import { getPlayer } from "../extra_modules/DataStorage";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-
-import { NativeEventEmitter } from 'react-native';
-const evHandler = new NativeEventEmitter();
 
 export const Player = ( {name} ) => {
     const [player, setPlayer] = useState();
@@ -24,11 +21,7 @@ export const Player = ( {name} ) => {
             setPlayer(player);
         };
         
-        if (player === undefined) {
-            fetchData();
-            evHandler.addListener( 'updated_DB', async ()=> await fetchData() );
-        }
-
+        if (player === undefined) fetchData();
     }, [player]);
 
     if(player === undefined) return <Text>Loading...</Text>
@@ -62,8 +55,10 @@ export const Player = ( {name} ) => {
 
 const styles = StyleSheet.create( {
     player: {
+        width: '27%',
+
         margin: 5, padding: 5,
-        backgroundColor: '#fff',
+        backgroundColor: 'rgba(255,255,255, .7)',
 
         borderRadius: 5,
 
@@ -95,7 +90,7 @@ const styles = StyleSheet.create( {
 
     text: {
         margin: 3,
-        fontSize: 10,
+        fontSize: 10, fontWeight: 'bold',
         textAlign: 'center',
     },
 } );

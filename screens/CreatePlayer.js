@@ -2,8 +2,10 @@ import { useState } from "react";
 import { View, Image, FlatList, Text, TextInput, StyleSheet, ImageBackground, Pressable } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import {Slider} from '@miblanchard/react-native-slider';
-import {savePlayer} from '../extra_modules/DataStorage'
+import {PlayerAlreadyExists, SavedPlayerWithGenericImage, savePlayer} from '../extra_modules/DataStorage'
 import { OptionsContainer } from "../extra_modules/OptionsContainer";
+
+import { Info } from "../extra_modules/Info";
 
 function Form ( props ) {
     const [name, setName] = useState(undefined);
@@ -30,9 +32,15 @@ function Form ( props ) {
             return;
         }
         
-        await savePlayer(name, rating[0], pos, image);
-
-        if(image === undefined) alert('Jogador foi definido com imagem genérica.');
+        try {
+            await savePlayer(name, rating[0], pos, image);
+            alert('Jogador foi salvo no sistema.');
+        } catch (err) {
+            if (err instanceof SavedPlayerWithGenericImage)
+                alert('Jogador salvo com imagem genérica.');
+            if (err instanceof PlayerAlreadyExists)
+                alert('Jogador não foi salvo, pois jogador com mesmo nome já existe no sistema.');
+        }
     };
 
     return (
@@ -75,49 +83,22 @@ function Form ( props ) {
     );
 }
 
-function Info ( props ) {
-    const giveInfo = () => {
-        setRenderInfo(!renderInfo);
-    };
-
-    const [renderInfo, setRenderInfo] = useState(false);
-    
-    return (
-        <View style={styles.info_pressable}> 
-        <Pressable onPress={giveInfo}> 
-            <Image source={require('../assets/imgs/info.png')} />
-        </Pressable>
-
-        {renderInfo &&
-        <View>
-            <FlatList
-            data={
-            ["Clique na interrogação para escolher uma imagem para representar o jogador.",
-             "Preencha o nome do respectivo jogador.",
-             "Selecione a posição do jogador.",
-             "Dê uma nota de 0 a 5 para o jogador movendo a estrela. Quanto mais a direita maior a nota.",
-             "Por fim, crie o jogador com o botão Criar."
-            ]}
-            renderItem={({ item }) => (
-                <Text style={styles.text}>{item}</Text>
-            )}
-            keyExtractor={item => item}
-            style={styles.infos}
-            />
-        </View>}
-
-        </View>
-    );
-}
-
-export function CreatePlayerScreen() {
+export function CreatePlayerScreen( {navigation, route} ) {
     const backImg = require('../assets/imgs/create_player_backg.jpg');
 
     return (
         <ImageBackground
         source={backImg}
         style={styles.container}>
-            <Info/>
+            <Info 
+            props={{info: [
+                "Clique na interrogação para escolher uma imagem para representar o jogador.",
+                "Você pode não escolher nenhuma imagem para usar uma imagem genérica.",
+                "Preencha o nome do respectivo jogador.",
+                "Selecione a posição do jogador.",
+                "Dê uma nota de 0 a 5 para o jogador movendo a estrela. Quanto mais a direita maior a nota.",
+                "Por fim, crie o jogador com o botão Criar."
+            ]}}/>
             <Form/>
         </ImageBackground>
     );
@@ -147,7 +128,14 @@ const styles = StyleSheet.create( {
     },
 
     infos: {
-        padding: 10,  
+        padding: 10,
+        height: 240, 
+    },
+
+    info_text: {
+        fontSize: 15,
+        marginVertical: 3,
+        textAlign: 'justify',
     },
 
     form: {

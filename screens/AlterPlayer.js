@@ -37,7 +37,7 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
 
     const deletePlayer = async () => {
         try {
-            await delPlayer(name);
+            await delPlayer(route.params.id);
             alert('Jogador deletado com sucesso.');
             nav.goBack();
         } catch (err) {
@@ -47,8 +47,9 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
 
     const submit = async () => {
         try {
-            await changePlayer(route.params.name, name, rating, pos, imgURI, available);
+            await changePlayer(route.params.id, name, rating, pos, imgURI, available);
             alert('Jogador alterado com sucesso.');
+            nav.goBack();
         } catch (err) {
             if(err instanceof PlayerAlreadyExists)
                 alert('Jogador com mesmo nome já existe no sistema.');

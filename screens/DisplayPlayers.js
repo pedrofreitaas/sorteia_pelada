@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, ImageBackground, FlatList, TextInput, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { getPlayers } from "../extra_modules/DataStorage";
+import { getPlayerIDs, getPlayerIDsWhoseNameMatch, getPlayers } from "../extra_modules/DataStorage";
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -11,30 +11,19 @@ import { useNavigation } from '@react-navigation/native';
 import {Player} from './Player';
 
 export function Players( {navigation, route} ) {
-    const [playerNames, setPlayerNames] = useState();
+    const [playerIDs, setPlayerIDs] = useState([]);
     const [searchPlayer, setSearchPlayer] = useState('');
 
     const nav = useNavigation();
 
     useEffect( () => {    
         const _getPlayers = async () => {
-            const data = await getPlayers();
-            const players = data.result;
+            const data = await getPlayerIDsWhoseNameMatch(searchPlayer);
     
-            const names = Object.entries(players).map( (item) => item[0] );
-            
-            if(searchPlayer === '') 
-                setPlayerNames(names);
-            
-            else{
-                const filteredNames = names.filter( (name) => name.slice(0, searchPlayer.length).toLowerCase() === searchPlayer.toLowerCase());
-                setPlayerNames(filteredNames);
-            }
+            setPlayerIDs(data.result);
         };
 
-        if(playerNames === undefined) {
-            _getPlayers();
-        }
+        _getPlayers();
 
     }, [searchPlayer]);
 
@@ -66,8 +55,8 @@ export function Players( {navigation, route} ) {
 
                 <FlatList
                 horizontal={false} numColumns={3}
-                data={playerNames}
-                renderItem={ (data) => <Player name={data.item}/> }/>
+                data={playerIDs}
+                renderItem={ (data) => <Player id={data.item}/> }/>
             </View>
         </ImageBackground>
     );

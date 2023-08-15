@@ -2,34 +2,39 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { getPlayer } from "../extra_modules/DataStorage";
+import { getPlayer, getPlayerByID } from "../extra_modules/DataStorage";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
-export const Player = ( {name} ) => {
+import { NativeEventEmitter } from 'react-native';
+const evHandler = new NativeEventEmitter();
+
+export const Player = ( {id} ) => {
     const [player, setPlayer] = useState();
 
     const nav = useNavigation();
-    
+
     useEffect( () => {
         const fetchData = async () => {
-            const data = await getPlayer(name);
+            const data = await getPlayerByID(id);
             const player = data.result;
-
+    
             setPlayer(player);
         };
-        
-        if (player === undefined) fetchData();
-    }, [player]);
+
+        fetchData();
+
+        evHandler.addListener('updated_DB', () => fetchData());
+    }, []);
 
     if(player === undefined) return <Text>Loading...</Text>
 
     return (
         <Pressable 
         style={styles.player}
-        onPress={ () => nav.navigate('AlterPlayer', Object.assign({name}, player) ) }>
+        onPress={ () => nav.navigate('AlterPlayer', Object.assign({id}, player) ) }>
 
             <View>
                 <Image
@@ -47,7 +52,7 @@ export const Player = ( {name} ) => {
             </View>
 
             <Text style={styles.text}>
-                {player.pos}{'\n'}{name}
+                {player.pos}{'\n'}{player.name}
             </Text>
         </Pressable>
     );

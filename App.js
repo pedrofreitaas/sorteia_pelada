@@ -12,6 +12,10 @@ import { ImageBackground, Text, View, StyleSheet, Pressable } from 'react-native
 
 import { FontAwesome } from '@expo/vector-icons';
 
+import { changePlayer, delAllPlayers, delPlayer, getPlayerByID, getPlayerByName, getPlayers } from './extra_modules/DataStorage';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Stack = createNativeStackNavigator();
 
 const MainScreen = ( {navigation, route} ) => {

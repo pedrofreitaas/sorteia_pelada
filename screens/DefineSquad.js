@@ -69,17 +69,21 @@ async function raffledPlayers() {
 function Team( {squad, upper} ) {
     const mediumRating = squad.reduce( (sum, item) => sum+item[1].rating, 0) / 6;
 
+    const getID = (str) => {
+        return Number( str.replace("player", "") );
+    }
+
     return (
         <View 
         style={{
             flex: 1/1.5,
             flexDirection: upper ? 'column' : 'column-reverse',
         }}>
-            <View style={styles.position}><Player name={squad[0][0]}/></View>
+            <View style={styles.position}><Player id={getID(squad[0][0])}/></View>
 
-            <View style={styles.position}><Player name={squad[1][0]}/><Player name={squad[2][0]}/></View>
+            <View style={styles.position}><Player id={getID(squad[1][0])}/><Player id={getID(squad[2][0])}/></View>
 
-            <View style={styles.position}><Player name={squad[3][0]}/><Player name={squad[4][0]}/></View>
+            <View style={styles.position}><Player id={getID(squad[3][0])}/><Player id={getID(squad[4][0])}/></View>
             
             <View style={styles.team_end}>
                 <View style={styles.team_rating}>
@@ -87,7 +91,7 @@ function Team( {squad, upper} ) {
                     <Text style={styles.team_rating_text}>{mediumRating.toFixed(2)}</Text>
                 </View>
 
-                <Player name={squad[5][0]}/>
+                <Player id={getID(squad[5][0])}/>                
             </View>
         </View>
     );

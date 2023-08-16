@@ -21,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.freitaas.sorteia_pelada"
     },
     "web": {
       "favicon": ""
+    },
+    "extra": {
+      "eas": {
+        "projectId": "12938210-bd33-450f-8dcb-c748bb5ae550"
+      }
     }
   }
 }

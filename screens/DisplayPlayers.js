@@ -73,8 +73,6 @@ const styles = StyleSheet.create( {
         width: 80, height: 35,
         borderRadius: 10,
 
-        borderWidth: 2, borderColor: '#eff',
-
         marginLeft: 20, marginRight: 10,
 
         alignSelf: 'flex-end',

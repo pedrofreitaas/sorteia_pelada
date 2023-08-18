@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Image, FlatList, Text, TextInput, StyleSheet, ImageBackground, Pressable } from "react-native";
+import { View, Image, Text, TextInput, StyleSheet, ImageBackground, Pressable } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import {Slider} from '@miblanchard/react-native-slider';
 import {PlayerAlreadyExists, SavedPlayerWithGenericImage, savePlayer} from '../extra_modules/DataStorage'

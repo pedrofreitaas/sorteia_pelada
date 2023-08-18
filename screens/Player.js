@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { getPlayer, getPlayerByID } from "../extra_modules/DataStorage";
+import { getPlayerByID } from "../extra_modules/DataStorage";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

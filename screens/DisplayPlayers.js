@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, ImageBackground, FlatList, TextInput, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { getPlayerIDs, getPlayerIDsWhoseNameMatch, getPlayers } from "../extra_modules/DataStorage";
+import { getPlayerIDsWhoseNameMatch } from "../extra_modules/DataStorage";
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';

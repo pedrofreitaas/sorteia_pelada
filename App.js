@@ -7,14 +7,11 @@ import {AlterPlayerScreen} from './screens/AlterPlayer.js'
 import {Squads} from './screens/DefineSquad'
 import {CreatePlayerScreen} from './screens/CreatePlayer';
 import {Players} from './screens/DisplayPlayers.js';
+import { AdScreen } from './screens/AdScreen.js';
 
 import { ImageBackground, Text, View, StyleSheet, Pressable } from 'react-native';
 
 import { FontAwesome } from '@expo/vector-icons';
-
-import { changePlayer, delAllPlayers, delPlayer, getPlayerByID, getPlayerByName, getPlayers } from './extra_modules/DataStorage';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,7 +22,7 @@ const MainScreen = ( {navigation, route} ) => {
 
   return (
     <ImageBackground source={backImg} style={styles.backImg}>
-      
+
       <View
       style={styles.title_view}>
         <Text style={styles.main_title}> Sorteia pelada </Text>
@@ -101,6 +98,12 @@ export default function App() {
           name="AlterPlayer"
           component={AlterPlayerScreen}
           options={ {title: 'Alteração de jogador.'} }/>
+
+        <Stack.Screen
+          name="Ads"
+          component={AdScreen}
+          options={ {header: ()=>false} }
+        />
 
       </Stack.Navigator>
     </NavigationContainer>);

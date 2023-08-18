@@ -4,6 +4,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import {getPlayers} from '../extra_modules/DataStorage'
 
 import { Player } from "./Player";
+import { AdScreen } from "./AdScreen";
+
+import { useNavigation } from '@react-navigation/native';
 
 function getRandomIntFromAtoB(A, B) { // does not include B
     return Math.round( A + Math.random()*(B-A) );
@@ -100,11 +103,13 @@ function Team( {squad, upper} ) {
 export const Squads = ( {navigation, route} ) => {
     const [squads, setSquads] = useState(undefined);
 
+    const nav = useNavigation();
+
     useEffect( () => {
         const rafflePlayers = async () => {
-            if(squads !== undefined) return
-
             try {
+                nav.navigate( "Ads", {} );
+
                 const value = await raffledPlayers();
                 
                 setSquads(value);

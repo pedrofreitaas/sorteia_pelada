@@ -7,6 +7,8 @@ import { OptionsContainer } from "../extra_modules/OptionsContainer";
 
 import { Info } from "../extra_modules/Info";
 
+import * as config from "../config.json";
+
 function Form ( props ) {
     const [name, setName] = useState(undefined);
     const [rating, setRating] = useState(false);
@@ -57,7 +59,7 @@ function Form ( props ) {
 
                 <OptionsContainer
                 props={ {
-                    options: ['GOL', 'ZAG', 'MEI', 'ATA'],
+                    options: config.availablePOS,
                     setValue: (value) => setPos(value) 
                 } }/>
 
@@ -96,6 +98,8 @@ export function CreatePlayerScreen( {navigation, route} ) {
                 "Você pode não escolher nenhuma imagem para usar uma imagem genérica.",
                 "Preencha o nome do respectivo jogador.",
                 "Selecione a posição do jogador.",
+                "Posição LINHA: jogador que joga em todas as posições exceto goleiro.",
+                "Posição CORINGA: jogador LINHA que também joga como goleiro.",
                 "Dê uma nota de 0 a 5 para o jogador movendo a estrela. Quanto mais a direita maior a nota.",
                 "Por fim, crie o jogador com o botão Criar."
             ]}}/>

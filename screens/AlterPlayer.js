@@ -11,6 +11,8 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 
+import * as config from '../config.json';
+
 import { Info } from '../extra_modules/Info';
 
 const Stack = createNativeStackNavigator();
@@ -70,6 +72,7 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
                        "Pressione a imagem para alterar a imagem do jogador.",
                        "Pressione o ícone abaixo da imagem para tornar o jogador disponível/indisponível para sorteio.",
                        "Altere os outros campos da maneira que preferir.",
+                       "A posição LINHA, refere-se ao jogador que pode jogar em qualquer posição, exceto goleiro",
                        "Quando terminar, clique em Finalizar para alterar o jogador.",
                 ],
             }}/>
@@ -107,7 +110,7 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
 
                     <OptionsContainer
                     props={ {
-                        options: ['GOL', 'ZAG', 'MEI', 'ATA'],
+                        options: config.availablePOS,
                         setValue: (value) => setPos(value),
                         selected: pos 
                     } }/>
@@ -172,11 +175,13 @@ const styles = StyleSheet.create( {
 
         alignSelf: 'center',
 
-        borderWidth: 1, borderColor: 'rgba(0,0,0,.4)', borderRadius: 5,
+        borderWidth: 1, borderColor: 'rgba(0,0,0,.4)', borderRadius: 10,
     },
 
     player_name_input: {
         alignSelf: 'center',
+
+        fontWeight: 'bold', fontStyle: 'italic', fontSize: 18,
     },
 
     rating_text: {

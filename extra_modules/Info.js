@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Image, FlatList, Text, StyleSheet, Pressable } from "react-native";
+import { MaterialIcons } from '@expo/vector-icons';
 
 export const Info = ( {props} ) => {
     const giveInfo = () => {
@@ -10,13 +11,20 @@ export const Info = ( {props} ) => {
     
     return (
         <View style={styles.info_pressable}> 
-            <Pressable onPress={giveInfo}> 
-                <Image source={require('../assets/imgs/info.png')} />
-            </Pressable>
 
-            {renderInfo &&
+            {renderInfo ?
+            
             <View>
                 <FlatList
+                showsVerticalScrollIndicator={true}
+                ListHeaderComponent={
+                    <Pressable
+                    onPress={() => setRenderInfo(false)}>
+                        <MaterialIcons 
+                        style={{margin: 10, alignSelf: 'center'}}
+                        name="cancel" size={25} color={"rgba(220,20,0,.99)"} />
+                    </Pressable>
+                }
                 data={props.info}
                 renderItem={({ item }) => (
                     <Text style={styles.info_text}>{item}</Text>
@@ -24,7 +32,13 @@ export const Info = ( {props} ) => {
                 keyExtractor={item => item}
                 style={styles.infos}
                 />
-            </View>}
+            </View>
+
+            :
+
+            <Pressable onPress={giveInfo}> 
+                <Image source={require('../assets/imgs/info.png')} />
+            </Pressable>}
         </View>
     );
 }
@@ -46,13 +60,14 @@ const styles = StyleSheet.create( {
     },
 
     infos: {
-        padding: 10,
-        height: 280,
+        paddingHorizontal: 10,
+        height: 170,
     },
 
     info_text: {
         fontSize: 15,
-        marginVertical: 3,
+        marginVertical: 5,
         textAlign: 'justify',
+        fontWeight: 'bold',
     },
 } );

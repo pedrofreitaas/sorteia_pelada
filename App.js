@@ -13,7 +13,7 @@ import { ImageBackground, Text, View, StyleSheet, Pressable } from 'react-native
 
 import { FontAwesome } from '@expo/vector-icons';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator(); 
 
 const MainScreen = ( {navigation, route} ) => {
   const backImg = require('./assets/imgs/soccer_field.jpg');
@@ -102,7 +102,7 @@ export default function App() {
         <Stack.Screen
           name="Ads"
           component={AdScreen}
-          options={ {header: ()=>false} }
+          options={ {title: 'Tela de anúncio.'} }
         />
 
       </Stack.Navigator>

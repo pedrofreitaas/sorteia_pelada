@@ -1,0 +1,11 @@
+{
+    "availablePOS": ["GOL", "ZAG", "MEI", "ATA", "LINHA", "CORINGA"],
+    "playersPerPos": {"GOL": 1, "ZAG": 2, "MEI": 2, "ATA": 1, "LINHA": 0, "CORINGA": 0},
+
+    "LINHAplayerPositions": ["ZAG", "MEI", "ATA"],
+    "CORINGAplayerPositions": ["GOL", "ZAG", "MEI", "ATA"],
+
+    "individualPOS": ["GOL", "ZAG", "MEI", "ATA"],
+
+    "hasToSort": ["GOL", "ZAG", "ZAG", "MEI", "MEI", "ATA"]
+}

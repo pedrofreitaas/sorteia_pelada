@@ -10,6 +10,8 @@ import { useNavigation } from '@react-navigation/native';
 
 import {Player} from './Player';
 
+import { Info } from '../extra_modules/Info';
+
 export function Players( {navigation, route} ) {
     const [playerIDs, setPlayerIDs] = useState([]);
     const [searchPlayer, setSearchPlayer] = useState('');
@@ -34,11 +36,25 @@ export function Players( {navigation, route} ) {
             <View style={styles.players_view}>
 
                 {route.params.sortButton===true 
-                ? <Pressable
-                style={styles.raffle_button}
-                onPress={ () => nav.navigate('Squads', {}) }>
-                    <Text>Sortear</Text>
-                </Pressable> 
+                ? 
+                
+                <View>
+                    <Pressable
+                    style={styles.raffle_button}
+                    onPress={ () => nav.navigate('Squads', {}) }>
+                        <Text>Sortear</Text>
+                    </Pressable>
+                    
+                    <Info 
+                    props={{
+                        info: ["Para sortear, é necessário habilitar os jogadores para sorteio.",
+                        "Se o jogador estiver habilitado, o ícone sobre sua foto estará verde.",
+                        "O ícone estará vermelho caso contrário.",
+                        "Para alterar o status de disponibilidade do jogador, basta clicar nele e edita-lo."
+                        ],
+                    }}/>
+                </View>
+
                 : <View></View>}
 
                 <View
@@ -73,7 +89,7 @@ const styles = StyleSheet.create( {
         width: 80, height: 35,
         borderRadius: 10,
 
-        marginLeft: 20, marginRight: 10,
+        marginLeft: 20, marginRight: 70,
 
         alignSelf: 'flex-end',
 

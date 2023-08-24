@@ -29,7 +29,8 @@ export const Player = ( {id} ) => {
         evHandler.addListener('updated_DB', () => fetchData());
     }, []);
 
-    if(player === undefined) return <Text>Loading...</Text>
+    if(player === null) return <View></View>;
+    if(player === undefined) return <Text>Loading...</Text>;
 
     return (
         <Pressable 

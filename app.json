@@ -1,4 +1,9 @@
 {
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-6887836893019511~7779925934",
+    "ios_app_id": "ca-app-pub-6887836893019511~7779925934"
+  },
+
   "expo": {
     "name": "sorteia_pelada",
     "slug": "sorteia_pelada",

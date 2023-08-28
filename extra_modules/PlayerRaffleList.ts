@@ -1,13 +1,12 @@
 // raffling players.
 import * as config from '../config.json';
-import { Squads } from '../screens/DefineSquad';
 
 class PlayerRedux {
-    public id: String;
-    public rating: Number;
-    public pos: String;
+    public id: string;
+    public rating: number;
+    public pos: string;
 
-    constructor (id: String, rating: Number, pos: String) {
+    constructor (id: string, rating: number, pos: string) {
         this.id = id; this.rating = rating; this.pos = pos;
     }
 }
@@ -23,9 +22,9 @@ export class NotSufficientPlayers extends Error{
 }
 
 export class PlayersList {
-    private players_ordered_by_pos: Map<String, Array<PlayerRedux>> = new Map();
+    private players_ordered_by_pos: Map<string, Array<PlayerRedux>> = new Map();
 
-    constructor(playersList: Array<[String, {pos:String, rating:Number, available: boolean}]>) {
+    constructor(playersList: Array<[string, {pos:string, rating:number, available: boolean}]>) {
         // filtering available players.
         playersList = playersList.filter( (item) => item[1].available );
 
@@ -38,7 +37,7 @@ export class PlayersList {
         
         // ordering each position by players rating.
         for (const item of this.players_ordered_by_pos.keys()) {
-            const ordered_players = this.players_ordered_by_pos.get(item).sort( (i1, i2) => i1.rating - i2.rating );
+            const ordered_players = this.players_ordered_by_pos.get(item).sort( (i1: PlayerRedux, i2: PlayerRedux) => i1.rating - i2.rating );
             this.players_ordered_by_pos.set(item, ordered_players);
         }
 
@@ -49,7 +48,7 @@ export class PlayersList {
 
     // gets the positions that can fill the position parameters.
     // Ex: the ZAG position can be filled by a ZAG, a CORINGA and a LINHA.
-    getPossibleCategories(pos: string){
+    getPossibleCategories(pos: string): Array<string> {
         if(["ZAG", "MEI", "ATA"].includes(pos))
             return ["LINHA", "CORINGA", pos];
 
@@ -103,7 +102,7 @@ export class PlayersList {
         return chosenPlayers;
     }
 
-    sortSquads(): Array<Map<String,PlayerRedux>> {
+    sortSquads(): Array<Map<string,PlayerRedux>> {
         const squads = [new Map(), new Map()];
 
         // mixed but no aleatory order of sorting.

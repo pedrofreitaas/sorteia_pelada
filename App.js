@@ -12,7 +12,7 @@ import { AdScreen } from './screens/AdScreen.js';
 import { ImageBackground, Text, View, StyleSheet, Pressable } from 'react-native';
 
 import { FontAwesome } from '@expo/vector-icons';
-
+ 
 const Stack = createNativeStackNavigator(); 
 
 const MainScreen = ( {navigation, route} ) => {
@@ -22,7 +22,6 @@ const MainScreen = ( {navigation, route} ) => {
 
   return (
     <ImageBackground source={backImg} style={styles.backImg}>
-
       <View
       style={styles.title_view}>
         <Text style={styles.main_title}> Sorteia pelada </Text>
@@ -92,7 +91,9 @@ export default function App() {
         <Stack.Screen
           name="DisplayPlayers"
           component={Players}
-          options={ {title: 'Escolha de jogador.'} }/>
+          options={ {
+            title: 'Escolha de jogador.'
+          } }/>
 
         <Stack.Screen
           name="AlterPlayer"
@@ -102,7 +103,11 @@ export default function App() {
         <Stack.Screen
           name="Ads"
           component={AdScreen}
-          options={ {title: 'Tela de anúncio.'} }
+          options={ {
+            title: 'Tela de anúncio.',
+            headerTitleAlign: 'center',
+            headerLeft: () => <View></View>,
+          } }
         />
 
       </Stack.Navigator>

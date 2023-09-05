@@ -9,6 +9,8 @@ import { Info } from "../extra_modules/Info";
 
 import * as config from "../config.json";
 
+import {BannerAdReady} from '../extra_modules/Ads';
+
 function Form ( props ) {
     const [name, setName] = useState(undefined);
     const [rating, setRating] = useState(false);
@@ -81,6 +83,15 @@ function Form ( props ) {
                 </Pressable>
 
             </View>
+
+            <BannerAdReady props={{
+                onLoad: null,
+                onError: null,
+                style: {
+                    alignSelf: 'center',
+                    marginTop: 100,
+                }
+            }}/>
         </View>
     );
 }

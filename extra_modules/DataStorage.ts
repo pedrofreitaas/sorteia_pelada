@@ -113,7 +113,7 @@ const getAvailableID = async () => {
     return id;
 };
 
-export const savePlayer = async (name: string, rating: number, pos:string, imgURI:string, available:boolean=false) => {
+export const savePlayer = async (name: string, rating: number, pos:string, imgURI:string, available:boolean=true) => {
     const newPlayer = {
         name: _removeWhiteSpaces(name),
         rating: rating,

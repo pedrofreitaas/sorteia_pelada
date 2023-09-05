@@ -31,9 +31,8 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-IDs.json
-
-# dependencies
 node_modules/
 
 assets/
+
+IDs.json

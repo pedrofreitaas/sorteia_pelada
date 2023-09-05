@@ -1,19 +1,18 @@
 {
   "react-native-google-mobile-ads": {
     "android_app_id": "ca-app-pub-6887836893019511~3729403238",
-    "ios_app_id": ""
+    "ios_app_id": "ca-app-pub-6887836893019511~3729403238"
   },
 
   "expo": {
     "name": "sorteia_pelada",
     "slug": "sorteia_pelada",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/imgs/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "assets/imgs/icon.png",
     "splash": {
-      "image": "./assets/imgs/splash.png",
-      "resizeMode": "cover",
+      "image": "assets/imgs/splash.png",
+      "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
@@ -23,6 +22,7 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "",
         "backgroundColor": "#ffffff"

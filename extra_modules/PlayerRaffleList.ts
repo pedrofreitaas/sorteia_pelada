@@ -16,8 +16,8 @@ function getRandomIntFromAtoB(A: number, B: number) { // does not include B
 }
 
 export class NotSufficientPlayers extends Error{
-    constructor(pos: string) {
-        super(`Não existem jogadores suficientes para a posição: ${pos}.`)
+    constructor() {
+        super(`Não existem jogadores suficientes registrados no sistema.`)
     }
 }
 
@@ -46,13 +46,25 @@ export class PlayersList {
             this.players_ordered_by_pos.set(pos, []);
     }
 
-    // gets the positions that can fill the position parameters.
+    // gets the positions that can fill the position parameter.
     // Ex: the ZAG position can be filled by a ZAG, a CORINGA and a LINHA.
     getPossibleCategories(pos: string): Array<string> {
         if(["ZAG", "MEI", "ATA"].includes(pos))
             return ["LINHA", "CORINGA", pos];
 
         return ["GOL", "CORINGA"];
+    }
+
+    // gets the positions that can't fill the position parameter.
+    // Ex: the ZAG position can't be filled by a GOL, MEI, ATA.
+    getNotPossibleCategorias(pos: string): Array<string> {
+        if(["ZAG", "MEI", "ATA"].includes(pos)) {
+            let values = ["GOL","ZAG", "MEI", "ATA"];
+            values.splice(values.indexOf(pos),1);
+            return values;
+        }
+
+        return ["ZAG", "MEI", "ATA"];
     }
 
     // get all the players registered in the instance that can fill the position in the parameter.
@@ -69,10 +81,40 @@ export class PlayersList {
         return possiblePlayers;
     }
 
-    getTwoBalancedPlayersByPos(pos: string): Array<PlayerRedux> {
-        const possiblePlayers = this.getPossiblePlayersByPos(pos);
+    // retrieve other position players if there isn't the amount needed.
+    fillWithExtraPlayers(pos: string, possiblePlayers: Array<PlayerRedux>): {possiblePlayers: Array<PlayerRedux>, usedExtraPlayers: boolean} {
+        let usedExtraPlayers = false;
 
-        if(possiblePlayers.length < 2) throw new NotSufficientPlayers(pos);
+        for(const item of this.getNotPossibleCategorias(pos)) {
+            if(possiblePlayers.length >= 2) break;
+
+            usedExtraPlayers = true;
+
+            let extraPlayers = this.getPossiblePlayersByPos(item);
+
+            const amount_needed = 2 - possiblePlayers.length;
+
+            // reducing the extra players to the sufficient.
+            extraPlayers = extraPlayers.slice(0, extraPlayers.length < amount_needed ? extraPlayers.length-1 : amount_needed)
+
+            possiblePlayers = possiblePlayers.concat( extraPlayers );
+        }
+
+        return {
+            possiblePlayers: possiblePlayers,
+            usedExtraPlayers: usedExtraPlayers,
+        };
+    }
+
+    getTwoBalancedPlayersByPos(pos: string): {players: Array<PlayerRedux>, usedExtraPlayers: boolean} {
+        let possiblePlayers = this.getPossiblePlayersByPos(pos);
+        
+        const result = this.fillWithExtraPlayers(pos, possiblePlayers);
+
+        possiblePlayers = result.possiblePlayers;
+        const usedExtraPlayers = result.usedExtraPlayers;
+
+        if(possiblePlayers.length < 2) throw new NotSufficientPlayers();
 
         let chosenPlayers: Array<PlayerRedux> = [];
 
@@ -83,33 +125,40 @@ export class PlayersList {
         chosenPlayers[ Number(!whichSquad) ] = possiblePlayers[index+1];
 
         // removing chosen players to avoid repetition.
-        const categories = this.getPossibleCategories(pos);
         for( const item of [possiblePlayers[index], possiblePlayers[index+1]] ) {
-            for( const cat of categories ) {
-                index = this.players_ordered_by_pos.get(cat).indexOf(item);
+            for( const category of config.availablePOS ) {
+                index = this.players_ordered_by_pos.get(category).indexOf(item);
                 
                 if(index != -1) {
-                    let players = this.players_ordered_by_pos.get(cat);
+                    let players = this.players_ordered_by_pos.get(category);
                     players.splice(index, 1);
 
-                    this.players_ordered_by_pos.set(cat, players);
+                    this.players_ordered_by_pos.set(category, players);
                     
                     break;
                 }
             }
         }
 
-        return chosenPlayers;
+        return {
+            players: chosenPlayers,
+            usedExtraPlayers: usedExtraPlayers
+        }            
     }
 
-    sortSquads(): Array<Map<string,PlayerRedux>> {
+    sortSquads(): {squads: Array<Map<string,PlayerRedux>>, usedExtraPlayers: boolean} {
         const squads = [new Map(), new Map()];
 
         // mixed but no aleatory order of sorting.
         const sequenceOfSort = config.hasToSort.sort( () => Math.random() - .9 );
 
+        let usedExtraPlayers = false;
+
         for(const pos of sequenceOfSort) {
-            let players = this.getTwoBalancedPlayersByPos(pos);
+            const result = this.getTwoBalancedPlayersByPos(pos);
+            let players = result.players;
+
+            usedExtraPlayers = usedExtraPlayers || result.usedExtraPlayers;
 
             for(const index in players)
                 if(squads[index].get(pos) == undefined)
@@ -118,6 +167,9 @@ export class PlayersList {
                     squads[index].set( pos, squads[index].get(pos).concat( [players[index]] ) );
         }
 
-        return squads;
+        return {
+            squads: squads,
+            usedExtraPlayers: usedExtraPlayers,
+        }
     }
 };

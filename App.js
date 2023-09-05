@@ -7,7 +7,8 @@ import {AlterPlayerScreen} from './screens/AlterPlayer.js'
 import {Squads} from './screens/DefineSquad'
 import {CreatePlayerScreen} from './screens/CreatePlayer';
 import {Players} from './screens/DisplayPlayers.js';
-import { AdScreen } from './screens/AdScreen.js';
+
+import {BannerAdReady} from './extra_modules/Ads';
 
 import { ImageBackground, Text, View, StyleSheet, Pressable } from 'react-native';
 
@@ -60,6 +61,12 @@ const MainScreen = ( {navigation, route} ) => {
         </Pressable>
 
       </View>
+
+      <BannerAdReady props={{
+        onLoad: null,
+        onError: null,
+        style: {alignSelf: 'center'}
+      }}/>
     </ImageBackground>
   );
 }
@@ -99,16 +106,6 @@ export default function App() {
           name="AlterPlayer"
           component={AlterPlayerScreen}
           options={ {title: 'Alteração de jogador.'} }/>
-
-        <Stack.Screen
-          name="Ads"
-          component={AdScreen}
-          options={ {
-            title: 'Tela de anúncio.',
-            headerTitleAlign: 'center',
-            headerLeft: () => <View></View>,
-          } }
-        />
 
       </Stack.Navigator>
     </NavigationContainer>);

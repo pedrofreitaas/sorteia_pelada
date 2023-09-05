@@ -12,6 +12,8 @@ import {Player} from './Player';
 
 import { Info } from '../extra_modules/Info';
 
+import {BannerAdReady} from '../extra_modules/Ads';
+
 export function Players( {navigation, route} ) {
     const [playerIDs, setPlayerIDs] = useState([]);
     const [searchPlayer, setSearchPlayer] = useState('');
@@ -74,6 +76,13 @@ export function Players( {navigation, route} ) {
                 data={playerIDs}
                 renderItem={ (data) => <Player id={data.item}/> }/>
             </View>
+            
+            <BannerAdReady props={{
+                onLoad: null,
+                onError: null,
+                style: {alignSelf: 'center'}
+            }}/>
+
         </ImageBackground>
     );
 };

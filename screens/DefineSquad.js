@@ -9,6 +9,8 @@ import {PlayersList, NotSufficientPlayers} from "../extra_modules/PlayerRaffleLi
 
 import { useNavigation } from '@react-navigation/native';
 
+import {showInterstitial} from '../extra_modules/Ads';
+
 function Team( {squad, upper} ) {
     let sum = 0;
     for(const item of squad)
@@ -58,17 +60,19 @@ export const Squads = ( {navigation, route} ) => {
     useEffect( () => {
         const rafflePlayers = async () => {
             try {
-                nav.navigate( "Ads", {} );
-
                 const data = await getPlayers();
 
                 const players = Object.entries(data.result);
 
                 const playersList = new PlayersList(players);
-
-                const value = playersList.sortSquads()
                 
-                setSquads(value);
+                const result = playersList.sortSquads();
+
+                if(result.usedExtraPlayers)
+                    alert("Foram utilizados jogadores fora de posição, por causa de falta de jogadores.");
+                
+                setSquads(result.squads);
+                
             } catch(error){
                 if(error instanceof NotSufficientPlayers)
                     alert(error);
@@ -77,7 +81,7 @@ export const Squads = ( {navigation, route} ) => {
             }
         };
 
-        if(squads===undefined) rafflePlayers();
+        if(squads===undefined) showInterstitial( rafflePlayers );
     }, [squads]);
 
     return (

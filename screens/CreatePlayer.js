@@ -11,6 +11,8 @@ import * as config from "../config.json";
 
 import {BannerAdReady} from '../extra_modules/Ads';
 
+import {useRealm, useQuery, Player} from '../extra_modules/RealmScheme';
+
 function Form ( props ) {
     const [name, setName] = useState(undefined);
     const [rating, setRating] = useState(false);
@@ -85,8 +87,6 @@ function Form ( props ) {
             </View>
 
             <BannerAdReady props={{
-                onLoad: null,
-                onError: null,
                 style: {
                     alignSelf: 'center',
                     marginTop: 100,
@@ -94,7 +94,7 @@ function Form ( props ) {
             }}/>
         </View>
     );
-}
+};
 
 export function CreatePlayerScreen( {navigation, route} ) {
     const backImg = require('../assets/imgs/create_player_backg.jpg');
@@ -117,7 +117,7 @@ export function CreatePlayerScreen( {navigation, route} ) {
             <Form/>
         </ImageBackground>
     );
-}
+};
 
 const styles = StyleSheet.create( {
     container: {
@@ -216,4 +216,4 @@ const styles = StyleSheet.create( {
 
         borderRadius: 10,
     }
-} );
+});

@@ -149,8 +149,8 @@ export class PlayersList {
     sortSquads(): {squads: Array<Map<string,PlayerRedux>>, usedExtraPlayers: boolean} {
         const squads = [new Map(), new Map()];
 
-        // mixed but no aleatory order of sorting.
-        const sequenceOfSort = config.hasToSort.sort( () => Math.random() - .9 );
+        // mixed but no aleatory order of sorting := const sequenceOfSort = config.hasToSort.sort( () => Math.random() - .9 );
+        const sequenceOfSort = config.hasToSort;
 
         let usedExtraPlayers = false;
 

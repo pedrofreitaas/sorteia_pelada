@@ -9,10 +9,9 @@
     "slug": "sorteia_pelada",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "assets/imgs/icon.png",
+    "icon": "./assets/imgs/icon.png",
     "splash": {
-      "image": "assets/imgs/splash.png",
-      "resizeMode": "contain",
+      "image": "./assets/imgs/splash.png",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
@@ -23,8 +22,9 @@
     },
     "android": {
       "versionCode": 2,
+      "icon": "./assets/imgs/icon.png",
       "adaptiveIcon": {
-        "foregroundImage": "",
+        "foregroundImage": "./assets/imgs/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.freitaas.sorteia_pelada"

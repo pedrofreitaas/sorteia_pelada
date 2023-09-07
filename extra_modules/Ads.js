@@ -1,5 +1,6 @@
 import {BannerAd, BannerAdSize, InterstitialAd, TestIds, AdEventType} from 'react-native-google-mobile-ads';
 import { View } from "react-native";
+import { useState } from 'react';
 
 import * as ids from '../IDs.json'
 
@@ -7,8 +8,8 @@ const bannerID = ids.bannerAdID!=="" ? ids.bannerAdID : TestIds.BANNER;
 const intersticialID = ids.intersticialAdID!=="" ? ids.intersticialAdID : TestIds.INTERSTITIAL;
 
 const interstitial = InterstitialAd.createForAdRequest(intersticialID, {
-    requestNonPersonalizedAdsOnly: true,
-    keywords: ['soccer', 'sports'],
+    requestNonPersonalizedAdsOnly: false,
+    keywords: ['soccer', 'sports', 'football'],
 });
 interstitial.load();
 
@@ -36,9 +37,22 @@ export const showInterstitial = (onCloseProcedure) => {
 
         interstitial.removeAllListeners();
     });
+
+    interstitial.addAdEventListener(AdEventType.ERROR, () => {
+        onCloseProcedure();
+        interstitial.load();
+
+        interstitial.removeAllListeners();
+    });
 };
 
 export const BannerAdReady = ( {props} ) => {
+    // avoid constant retry to get add.
+    const [failed, setFailed] = useState(false);
+
+    if(failed)
+        return <View></View>;
+
     return (
         <View
         style={props.style}>
@@ -46,12 +60,11 @@ export const BannerAdReady = ( {props} ) => {
             unitId={bannerID}
             size={BannerAdSize.BANNER}
             requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-                keywords: ['sports', 'soccer'],
+                requestNonPersonalizedAdsOnly: false,
+                keywords: ['sports', 'soccer', 'football'],
             }}
-            onAdFailedToLoad={(err) => props.onError(err)}
-            
-            onAdLoaded={props.onLoad}
+            onAdFailedToLoad={ () => setFailed(true) }
+            // onAdLoaded={}
             />
         </View>
     );

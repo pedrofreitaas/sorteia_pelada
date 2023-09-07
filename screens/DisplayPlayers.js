@@ -78,8 +78,6 @@ export function Players( {navigation, route} ) {
             </View>
             
             <BannerAdReady props={{
-                onLoad: null,
-                onError: null,
                 style: {alignSelf: 'center'}
             }}/>
 

@@ -49,7 +49,7 @@ const updateLastUpdate = () => {
     evHandler.emit('updated_DB');
 };
 
-function _removeWhiteSpaces( str: string ): null {
+function _removeWhiteSpaces( str: string ): string {
     if(typeof str !== typeof "") throw TypeError;
 
     while ( str[str.length-1] === " " )
@@ -102,7 +102,7 @@ export const getPlayerByID = async (id: number) => {
 };
 //
 
-const getAvailableID = async () => {
+export const getAvailableID = async () => {
     let id = await AsyncStorage.getItem(storageKeys.nextID);
     id = JSON.parse(id);
 

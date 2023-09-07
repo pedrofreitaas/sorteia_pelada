@@ -7,13 +7,17 @@ import {AlterPlayerScreen} from './screens/AlterPlayer.js'
 import {Squads} from './screens/DefineSquad'
 import {CreatePlayerScreen} from './screens/CreatePlayer';
 import {Players} from './screens/DisplayPlayers.js';
+import { Peladas } from './screens/Peladas.js';
 
 import {BannerAdReady} from './extra_modules/Ads';
 
 import { ImageBackground, Text, View, StyleSheet, Pressable } from 'react-native';
 
 import { FontAwesome } from '@expo/vector-icons';
+
+import { RealmProvider } from './extra_modules/RealmScheme';
  
+// create screens stack.
 const Stack = createNativeStackNavigator(); 
 
 const MainScreen = ( {navigation, route} ) => {
@@ -60,11 +64,19 @@ const MainScreen = ( {navigation, route} ) => {
           style={styles.main_button_text}> Alterar jogador </Text>
         </Pressable>
 
+        <Pressable 
+        style={styles.main_button}
+        onPress={ () => {
+          nav.navigate('Peladas', {});
+        } }> 
+          <FontAwesome name="angellist" size={20} color="rgba(0,0,0,.7)"/>
+          <Text
+          style={styles.main_button_text}> Peladas </Text>
+        </Pressable>
+
       </View>
 
       <BannerAdReady props={{
-        onLoad: null,
-        onError: null,
         style: {alignSelf: 'center'}
       }}/>
     </ImageBackground>
@@ -74,41 +86,49 @@ const MainScreen = ( {navigation, route} ) => {
 export default function App() {
   try {
     return (
-    <NavigationContainer>
-      <Stack.Navigator>
+      <RealmProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
 
-        <Stack.Screen
-          name="Main"
-          component={MainScreen}
-          options={ {title: 'Tela Inicial'} }
-        />
+            <Stack.Screen
+              name="Main"
+              component={MainScreen}
+              options={ {title: 'Tela Inicial'} }
+            />
 
-        <Stack.Screen
-          name="CreatePlayer"
-          component={CreatePlayerScreen}
-          options={ {title: 'Criação de jogador'} }
-        />
+            <Stack.Screen
+              name="Peladas"
+              component={Peladas}
+              options={ {title: 'Peladas'} }
+            />
 
-        <Stack.Screen
-          name="Squads"
-          component={Squads}
-          options={ {title: 'Sorteio de times'} }
-        />
+            <Stack.Screen
+              name="CreatePlayer"
+              component={CreatePlayerScreen}
+              options={ {title: 'Criação de jogador'} }
+            />
 
-        <Stack.Screen
-          name="DisplayPlayers"
-          component={Players}
-          options={ {
-            title: 'Escolha de jogador.'
-          } }/>
+            <Stack.Screen
+              name="Squads"
+              component={Squads}
+              options={ {title: 'Sorteio de times'} }
+            />
 
-        <Stack.Screen
-          name="AlterPlayer"
-          component={AlterPlayerScreen}
-          options={ {title: 'Alteração de jogador.'} }/>
+            <Stack.Screen
+              name="DisplayPlayers"
+              component={Players}
+              options={ {
+                title: 'Escolha de jogador.'
+              } }/>
 
-      </Stack.Navigator>
-    </NavigationContainer>);
+            <Stack.Screen
+              name="AlterPlayer"
+              component={AlterPlayerScreen}
+              options={ {title: 'Alteração de jogador.'} }/>
+
+          </Stack.Navigator>
+        </NavigationContainer>
+      </RealmProvider>);
   }
 
   catch(error) {

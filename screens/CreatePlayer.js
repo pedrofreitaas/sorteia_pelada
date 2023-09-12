@@ -2,7 +2,6 @@ import { useState } from "react";
 import { View, Image, Text, TextInput, StyleSheet, ImageBackground, Pressable } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 import {Slider} from '@miblanchard/react-native-slider';
-import {PlayerAlreadyExists, SavedPlayerWithGenericImage, savePlayer} from '../extra_modules/DataStorage'
 import { OptionsContainer } from "../extra_modules/OptionsContainer";
 
 import { Info } from "../extra_modules/Info";
@@ -11,15 +10,23 @@ import * as config from "../config.json";
 
 import {BannerAdReady} from '../extra_modules/Ads';
 
-import {useRealm, useQuery, Player} from '../extra_modules/RealmScheme';
+import * as RealmScheme from '../extra_modules/RealmScheme';
 
-function Form ( props ) {
+class SavedPlayerWithGenericImage extends Error {
+    constructor() {
+        super('Player was saved with generic image.');
+    }
+}; 
+
+const Form = ( {props} ) => {
     const [name, setName] = useState(undefined);
     const [rating, setRating] = useState(false);
     const [pos, setPos] = useState(undefined);
 
     const question_mark = require('../assets/imgs/question_mark.jpg');
-    const [image, setImage] = useState(undefined);
+    const [image, setImage] = useState("");
+
+    const realm = RealmScheme.useRealm();
 
     const setPlayerImg = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -31,6 +38,17 @@ function Form ( props ) {
 
         if (!result.canceled) setImage(result.assets[0].uri);
     };
+   
+    const savePlayer = () => {
+        realm.write(() => realm.create('Player', {
+            _id: new Realm.BSON.ObjectId(),
+            name: name, rating: rating[0], pos: pos, imgURI: image, available: true,
+            presences: 0, gols: 0, assists: 0,
+        }) );
+
+        if(image === "")
+            throw new SavedPlayerWithGenericImage();
+    };
 
     const submit = async () => {
         if(name===null || rating===false || pos === undefined){
@@ -39,13 +57,13 @@ function Form ( props ) {
         }
         
         try {
-            await savePlayer(name, rating[0], pos, image);
+            savePlayer();
             alert('Jogador foi salvo no sistema.');
         } catch (err) {
             if (err instanceof SavedPlayerWithGenericImage)
                 alert('Jogador salvo com imagem genérica.');
-            if (err instanceof PlayerAlreadyExists)
-                alert('Jogador não foi salvo, pois jogador com mesmo nome já existe no sistema.');
+            else
+                alert(err);
         }
     };
 
@@ -96,7 +114,7 @@ function Form ( props ) {
     );
 };
 
-export function CreatePlayerScreen( {navigation, route} ) {
+export const CreatePlayerScreen = ( {navigation, route} ) => {
     const backImg = require('../assets/imgs/create_player_backg.jpg');
 
     return (

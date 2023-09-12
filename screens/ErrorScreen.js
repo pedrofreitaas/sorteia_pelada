@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-export function NotDefinedScreen(){
+export const NotDefinedScreen = () => {
     return (
         <View style={styles.main}>
             <Text> Error, reached not defined screen. </Text>

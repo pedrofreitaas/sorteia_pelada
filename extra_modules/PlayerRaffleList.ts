@@ -1,15 +1,6 @@
 // raffling players.
 import * as config from '../config.json';
-
-class PlayerRedux {
-    public id: string;
-    public rating: number;
-    public pos: string;
-
-    constructor (id: string, rating: number, pos: string) {
-        this.id = id; this.rating = rating; this.pos = pos;
-    }
-}
+import * as RealmScheme from './RealmScheme';
 
 function getRandomIntFromAtoB(A: number, B: number) { // does not include B
     return Math.round( A + Math.random()*(B-A) );
@@ -22,22 +13,22 @@ export class NotSufficientPlayers extends Error{
 }
 
 export class PlayersList {
-    private players_ordered_by_pos: Map<string, Array<PlayerRedux>> = new Map();
+    private players_ordered_by_pos: Map<string, Array<RealmScheme.Player>> = new Map();
 
-    constructor(playersList: Array<[string, {pos:string, rating:number, available: boolean}]>) {
+    constructor(playersList: Array<RealmScheme.Player>) {
         // filtering available players.
-        playersList = playersList.filter( (item) => item[1].available );
+        playersList = playersList.filter( (item) => item.available );
 
         // filling the positions of the Map with the players.
         for(const item of playersList)
-            if (this.players_ordered_by_pos.get(item[1].pos) === undefined)
-                this.players_ordered_by_pos.set(item[1].pos, [new PlayerRedux(item[0], item[1].rating, item[1].pos)])
+            if (this.players_ordered_by_pos.get(item.pos) === undefined)
+                this.players_ordered_by_pos.set(item.pos, [item])
             else 
-                this.players_ordered_by_pos.set(item[1].pos, this.players_ordered_by_pos.get(item[1].pos).concat([new PlayerRedux(item[0], item[1].rating, item[1].pos)]));
+                this.players_ordered_by_pos.set(item.pos, this.players_ordered_by_pos.get(item.pos).concat([item]));
         
         // ordering each position by players rating.
         for (const item of this.players_ordered_by_pos.keys()) {
-            const ordered_players = this.players_ordered_by_pos.get(item).sort( (i1: PlayerRedux, i2: PlayerRedux) => i1.rating - i2.rating );
+            const ordered_players = this.players_ordered_by_pos.get(item).sort( (i1, i2) => i1.rating - i2.rating );
             this.players_ordered_by_pos.set(item, ordered_players);
         }
 
@@ -68,12 +59,12 @@ export class PlayersList {
     }
 
     // get all the players registered in the instance that can fill the position in the parameter.
-    getPossiblePlayersByPos(pos: string): Array<PlayerRedux> {
+    getPossiblePlayersByPos(pos: string): Array<RealmScheme.Player> {
         if(! ["GOL", "ZAG", "MEI", "ATA"].includes(pos) ) throw new Error();
 
         const categories = this.getPossibleCategories(pos);
 
-        let possiblePlayers: Array<PlayerRedux> = [];
+        let possiblePlayers: Array<RealmScheme.Player> = [];
         
         for(const cat of categories)
             possiblePlayers = possiblePlayers.concat(this.players_ordered_by_pos.get(cat));
@@ -82,7 +73,7 @@ export class PlayersList {
     }
 
     // retrieve other position players if there isn't the amount needed.
-    fillWithExtraPlayers(pos: string, possiblePlayers: Array<PlayerRedux>): {possiblePlayers: Array<PlayerRedux>, usedExtraPlayers: boolean} {
+    fillWithExtraPlayers(pos: string, possiblePlayers: Array<RealmScheme.Player>): {possiblePlayers: Array<RealmScheme.Player>, usedExtraPlayers: boolean} {
         let usedExtraPlayers = false;
 
         for(const item of this.getNotPossibleCategorias(pos)) {
@@ -106,7 +97,7 @@ export class PlayersList {
         };
     }
 
-    getTwoBalancedPlayersByPos(pos: string): {players: Array<PlayerRedux>, usedExtraPlayers: boolean} {
+    getTwoBalancedPlayersByPos(pos: string): {players: Array<RealmScheme.Player>, usedExtraPlayers: boolean} {
         let possiblePlayers = this.getPossiblePlayersByPos(pos);
         
         const result = this.fillWithExtraPlayers(pos, possiblePlayers);
@@ -116,7 +107,7 @@ export class PlayersList {
 
         if(possiblePlayers.length < 2) throw new NotSufficientPlayers();
 
-        let chosenPlayers: Array<PlayerRedux> = [];
+        let chosenPlayers: Array<RealmScheme.Player> = [];
 
         let whichSquad = getRandomIntFromAtoB(0, 1);
         var index = getRandomIntFromAtoB(0, possiblePlayers.length-2);
@@ -146,7 +137,7 @@ export class PlayersList {
         }            
     }
 
-    sortSquads(): {squads: Array<Map<string,PlayerRedux>>, usedExtraPlayers: boolean} {
+    sortSquads(): {squads: Array<Map<string,RealmScheme.Player>>, usedExtraPlayers: boolean} {
         const squads = [new Map(), new Map()];
 
         // mixed but no aleatory order of sorting := const sequenceOfSort = config.hasToSort.sort( () => Math.random() - .9 );

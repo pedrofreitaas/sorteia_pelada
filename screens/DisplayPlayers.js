@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { Text, StyleSheet, View, ImageBackground, FlatList, TextInput, Pressable } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
-import { getPlayerIDsWhoseNameMatch } from "../extra_modules/DataStorage";
-
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
@@ -14,22 +12,32 @@ import { Info } from '../extra_modules/Info';
 
 import {BannerAdReady} from '../extra_modules/Ads';
 
-export function Players( {navigation, route} ) {
-    const [playerIDs, setPlayerIDs] = useState([]);
-    const [searchPlayer, setSearchPlayer] = useState('');
+import * as RealmScheme from '../extra_modules/RealmScheme';
+
+export const Players = ( {navigation, route} ) => {
+    const [players, setPlayers] = useState(RealmScheme.useQuery(RealmScheme.Player));
+    const [search, setSearch] = useState("");
 
     const nav = useNavigation();
 
-    useEffect( () => {    
-        const _getPlayers = async () => {
-            const data = await getPlayerIDsWhoseNameMatch(searchPlayer);
-    
-            setPlayerIDs(data.result);
+    const updateSearch = (name) => {
+        setPlayers( players.filter( (pl) => pl.name.slice(0, name.length).toLowerCase() === name.toLowerCase()) );
+    };
+
+    useEffect( () => {
+        players.addListener( (changes) => {
+            setPlayers(changes);
+        });
+
+        return () => {
+            players.removeAllListeners();
         };
+        
+    }, []);
 
-        _getPlayers();
-
-    }, [searchPlayer]);
+    useEffect( () => {    
+        updateSearch(search);
+    }, [search]);
 
     return (
         <ImageBackground
@@ -38,24 +46,22 @@ export function Players( {navigation, route} ) {
             <View style={styles.players_view}>
 
                 {route.params.sortButton===true 
-                ? 
-                
-                <View>
-                    <Pressable
-                    style={styles.raffle_button}
-                    onPress={ () => nav.navigate('Squads', {}) }>
-                        <Text>Sortear</Text>
-                    </Pressable>
-                    
-                    <Info 
-                    props={{
-                        info: ["Para sortear, é necessário habilitar os jogadores para sorteio.",
-                        "Se o jogador estiver habilitado, o ícone sobre sua foto estará verde.",
-                        "O ícone estará vermelho caso contrário.",
-                        "Para alterar o status de disponibilidade do jogador, basta clicar nele e edita-lo."
-                        ],
-                    }}/>
-                </View>
+                ?   <View>
+                        <Pressable
+                        style={styles.raffle_button}
+                        onPress={ () => nav.navigate('Squads', {}) }>
+                            <Text>Sortear</Text>
+                        </Pressable>
+                        
+                        <Info 
+                        props={{
+                            info: ["Para sortear, é necessário habilitar os jogadores para sorteio.",
+                            "Se o jogador estiver habilitado, o ícone sobre sua foto estará verde.",
+                            "O ícone estará vermelho caso contrário.",
+                            "Para alterar o status de disponibilidade do jogador, basta clicar nele e edita-lo."
+                            ],
+                        }}/>
+                    </View>
 
                 : <View></View>}
 
@@ -64,8 +70,8 @@ export function Players( {navigation, route} ) {
                     <TextInput
                     style={styles.search_bar} 
                     placeholder='Pesquise por jogador'
-                    value={searchPlayer}
-                    onChangeText={ (newText) => {setSearchPlayer(newText)} }/>
+                    value={search}
+                    onChangeText={ (newText) => {setSearch(newText)} }/>
 
                     <MaterialIcons
                     name="search" size={30} color="rgba(0,0,0,1)" />
@@ -73,8 +79,8 @@ export function Players( {navigation, route} ) {
 
                 <FlatList
                 horizontal={false} numColumns={3}
-                data={playerIDs}
-                renderItem={ (data) => <Player id={data.item}/> }/>
+                data={players}
+                renderItem={ (data) => <Player playerInfo={data.item}/> }/>
             </View>
             
             <BannerAdReady props={{

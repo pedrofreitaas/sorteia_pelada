@@ -1,11 +1,10 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Text, StyleSheet, View, Image, TextInput, Pressable, ImageBackground} from "react-native";
 import {Slider} from '@miblanchard/react-native-slider';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {OptionsContainer} from '../extra_modules/OptionsContainer';
-import {PlayerAlreadyExists, SavedPlayerWithGenericImage, changePlayer, delPlayer} from '../extra_modules/DataStorage';
 import { useNavigation } from '@react-navigation/native';
 
 import { MaterialIcons } from '@expo/vector-icons';
@@ -14,6 +13,8 @@ import * as ImagePicker from 'expo-image-picker';
 import * as config from '../config.json';
 
 import { Info } from '../extra_modules/Info';
+
+import * as RealmScheme from '../extra_modules/RealmScheme';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,10 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
 
     const nav = useNavigation();
 
+    const realm = RealmScheme.useRealm();
+
+    const player = RealmScheme.useObject(RealmScheme.Player, route.params._id);
+
     const setPlayerImg = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.image,
@@ -37,9 +42,9 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
         if (!result.canceled) setImgURI(result.assets[0].uri);
     };
 
-    const deletePlayer = async () => {
+    const deletePlayer = () => {
         try {
-            await delPlayer(route.params.id);
+            realm.write( () => realm.delete(player) );
             alert('Jogador deletado com sucesso.');
             nav.goBack();
         } catch (err) {
@@ -47,9 +52,18 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
         }
     };
 
-    const submit = async () => {
+    const updatePlayer = () => {
         try {
-            await changePlayer(route.params.id, name, rating, pos, imgURI, available);
+            if(player){
+                realm.write( () => {
+                    player.name = name;
+                    player.pos = pos;
+                    player.rating = rating;
+                    player.imgURI = imgURI;
+                    player.available = available;
+                })
+            }
+
             alert('Jogador alterado com sucesso.');
             nav.goBack();
         } catch (err) {
@@ -82,7 +96,7 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
 
                 <Pressable
                 style={styles.delete_button}
-                onPress={() => deletePlayer(name)}>
+                onPress={deletePlayer}>
                     <MaterialIcons name="cancel" size={45} color={"rgba(220,20,0,.99)"} />
                 </Pressable>
 
@@ -90,7 +104,7 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
                 onPress={setPlayerImg}>
                     <Image
                     style={styles.player_img}
-                    source={ imgURI === undefined ? require('../assets/imgs/generic_player.jpg') : {uri: imgURI} }/>
+                    source={ imgURI === "" ? require('../assets/imgs/generic_player.jpg') : {uri: imgURI} }/>
                 </Pressable>
 
                 <Pressable
@@ -130,7 +144,7 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
 
                     <Pressable 
                     style={styles.submit_pressable}
-                    onPress={submit}>
+                    onPress={updatePlayer}>
                         <Text style={styles.submit_text}> Finalizar. </Text>
                     </Pressable>
                 </View>

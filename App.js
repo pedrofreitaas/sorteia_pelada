@@ -93,7 +93,9 @@ export default function App() {
             <Stack.Screen
               name="Main"
               component={MainScreen}
-              options={ {title: 'Tela Inicial'} }
+              options={ {
+                title: 'Tela Inicial'
+              } }
             />
 
             <Stack.Screen

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Text, StyleSheet, View, Pressable, ImageBackground } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
-import {getPlayers} from '../extra_modules/DataStorage'
 
 import { Player } from "./Player";
 
@@ -11,16 +10,14 @@ import { useNavigation } from '@react-navigation/native';
 
 import {showInterstitial} from '../extra_modules/Ads';
 
-function Team( {squad, upper} ) {
+import * as RealmScheme from '../extra_modules/RealmScheme';
+
+const Team = ( {squad, upper} ) => {
     let sum = 0;
     for(const item of squad)
         for(const pl of item[1])
             sum += pl.rating;
     const mediumRating = sum/6; //squad.reduce( (sum, item) => sum+item.rating, 0) / 6;
-
-    const getID = (str) => {
-        return Number( str.replace("player", "") );
-    }
 
     return (
         <View 
@@ -29,15 +26,15 @@ function Team( {squad, upper} ) {
             flexDirection: upper ? 'column' : 'column-reverse',
         }}>
             <View style={styles.position}>
-                {squad.get("GOL").map( item => <Player key={item.id} id={getID(item.id)}/> )}
+                {squad.get("GOL").map( item => <Player playerInfo={item}/> )}
             </View>
 
             <View style={styles.position}>
-                {squad.get("ZAG").map( item => <Player key={item.id} id={getID(item.id)}/> )}
+                {squad.get("ZAG").map( item => <Player playerInfo={item}/> )}
             </View>
 
             <View style={styles.position}>
-                {squad.get("MEI").map( item => <Player key={item.id} id={getID(item.id)}/> )}
+                {squad.get("MEI").map( item => <Player playerInfo={item}/> )}
             </View>
             
             <View style={styles.team_end}>
@@ -46,7 +43,7 @@ function Team( {squad, upper} ) {
                     <Text style={styles.team_rating_text}>{mediumRating.toFixed(2)}</Text>
                 </View>
 
-                {squad.get("ATA").map( item => <Player key={item.id} id={getID(item.id)}/> )}
+                {squad.get("ATA").map( item => <Player playerInfo={item}/> )}
             </View>
         </View>
     );
@@ -57,19 +54,17 @@ export const Squads = ( {navigation, route} ) => {
 
     const nav = useNavigation();
 
+    const players = RealmScheme.useQuery(RealmScheme.Player);
+
     useEffect( () => {
-        const rafflePlayers = async () => {
+        const rafflePlayers = () => {
             try {
-                const data = await getPlayers();
-
-                const players = Object.entries(data.result);
-
                 const playersList = new PlayersList(players);
                 
                 const result = playersList.sortSquads();
 
                 if(result.usedExtraPlayers)
-                    alert("Foram utilizados jogadores fora de posição, por causa de falta de jogadores.");
+                    alert("Foram utilizados jogadores fora de posição, por falta de jogadores.");
                 
                 setSquads(result.squads);
                 
@@ -103,7 +98,7 @@ export const Squads = ( {navigation, route} ) => {
             {squads && <Team {...{squad: squads[1], upper: false} } />}
         </ImageBackground>
     );
-}
+};
 
 const styles = StyleSheet.create( {
     container: {

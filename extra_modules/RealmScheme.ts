@@ -1,11 +1,15 @@
 import Realm from "realm";
- Realm.flags.THROW_ON_GLOBAL_REALM = true;
 import {createRealmContext} from '@realm/react';
 
 // Define your object model
 export class Player extends Realm.Object<Player> {
   _id!: Realm.BSON.ObjectId;
   name!: string;
+  pos: string;
+  rating: number;
+  imgURI: string;
+  available: boolean;
+  presences: number; gols: number; assists: number;
 
   static schema = {
     name: 'Player',
@@ -29,9 +33,3 @@ const realmConfig: Realm.Configuration = {
 
 // Create a realm context
 export const {RealmProvider, useRealm, useObject, useQuery} = createRealmContext(realmConfig);
-
-export const getPlayer = (name: string) => {
-    const players = useQuery(Player);
-
-    return players.filter( pl => pl.name === name );
-};

@@ -4,18 +4,20 @@ import { useNavigation } from '@react-navigation/native';
 
 import {NotDefinedScreen} from './screens/ErrorScreen.js'
 import {AlterPlayerScreen} from './screens/AlterPlayer.js'
-import {Squads} from './screens/DefineSquad'
-import {CreatePlayerScreen} from './screens/CreatePlayer';
+import {Squads} from './screens/DefineSquad.js'
+import {CreatePlayerScreen} from './screens/CreatePlayer.js';
 import {Players} from './screens/DisplayPlayers.js';
 import { Peladas } from './screens/Peladas.js';
 
-import {BannerAdReady} from './extra_modules/Ads';
+import {BannerAdReady} from './extra_modules/Ads.js';
 
 import { ImageBackground, Text, View, StyleSheet, Pressable } from 'react-native';
 
 import { FontAwesome } from '@expo/vector-icons';
 
 import { RealmProvider } from './extra_modules/RealmScheme';
+
+import { GluestackUIProvider, config } from "@gluestack-ui/themed"
  
 // create screens stack.
 const Stack = createNativeStackNavigator(); 
@@ -86,51 +88,53 @@ const MainScreen = ( {navigation, route} ) => {
 export default function App() {
   try {
     return (
-      <RealmProvider>
-        <NavigationContainer>
-          <Stack.Navigator>
+      <GluestackUIProvider config={config.theme}>
+        <RealmProvider>
+          <NavigationContainer>
+            <Stack.Navigator>
 
-            <Stack.Screen
-              name="Main"
-              component={MainScreen}
-              options={ {
-                title: 'Tela Inicial'
-              } }
-            />
+              <Stack.Screen
+                name="Main"
+                component={MainScreen}
+                options={ {
+                  title: 'Tela Inicial'
+                } }
+              />
 
-            <Stack.Screen
-              name="Peladas"
-              component={Peladas}
-              options={ {title: 'Peladas'} }
-            />
+              <Stack.Screen
+                name="Peladas"
+                component={Peladas}
+                options={ {title: 'Peladas'} }
+              />
 
-            <Stack.Screen
-              name="CreatePlayer"
-              component={CreatePlayerScreen}
-              options={ {title: 'Criação de jogador'} }
-            />
+              <Stack.Screen
+                name="CreatePlayer"
+                component={CreatePlayerScreen}
+                options={ {title: 'Criação de jogador'} }
+              />
 
-            <Stack.Screen
-              name="Squads"
-              component={Squads}
-              options={ {title: 'Sorteio de times'} }
-            />
+              <Stack.Screen
+                name="Squads"
+                component={Squads}
+                options={ {title: 'Sorteio de times'} }
+              />
 
-            <Stack.Screen
-              name="DisplayPlayers"
-              component={Players}
-              options={ {
-                title: 'Escolha de jogador.'
-              } }/>
+              <Stack.Screen
+                name="DisplayPlayers"
+                component={Players}
+                options={ {
+                  title: 'Escolha de jogador.'
+                } }/>
 
-            <Stack.Screen
-              name="AlterPlayer"
-              component={AlterPlayerScreen}
-              options={ {title: 'Alteração de jogador.'} }/>
+              <Stack.Screen
+                name="AlterPlayer"
+                component={AlterPlayerScreen}
+                options={ {title: 'Alteração de jogador.'} }/>
 
-          </Stack.Navigator>
-        </NavigationContainer>
-      </RealmProvider>);
+            </Stack.Navigator>
+          </NavigationContainer>
+        </RealmProvider>
+      </GluestackUIProvider>);
   }
 
   catch(error) {

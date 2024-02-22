@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Text, StyleSheet, View, Pressable, ImageBackground } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 
+import { Alert, AlertIcon, AlertText, InfoIcon } from '@gluestack-ui/themed';
+
 import { Player } from "./Player";
 
 import {PlayersList, NotSufficientPlayers} from "../extra_modules/PlayerRaffleList.ts";
@@ -11,6 +13,15 @@ import { useNavigation } from '@react-navigation/native';
 import {showInterstitial} from '../extra_modules/Ads';
 
 import * as RealmScheme from '../extra_modules/RealmScheme';
+
+const MyAlert = ( {text, icon} ) => {
+    return (
+        <Alert mx='$2.5'  action="info" variant="solid" style={styles.alert}>
+            {icon}
+            <AlertText>{text} </AlertText>
+        </Alert>
+    );
+}
 
 const Team = ( {squad, upper} ) => {
     let sum = 0;
@@ -51,6 +62,10 @@ const Team = ( {squad, upper} ) => {
 
 export const Squads = ( {navigation, route} ) => {
     const [squads, setSquads] = useState(undefined);
+    const [_lackPlayers, setLackPlayers] = useState(false);
+    const [_unexpectedError, setUnexpectedError] = useState(false);
+    const [_outOfPosRaffle, setOutOfPosRaffle] = useState(false);
+    const alert_timer = 4 * 1000;
 
     const nav = useNavigation();
 
@@ -64,20 +79,32 @@ export const Squads = ( {navigation, route} ) => {
                 const result = playersList.sortSquads();
 
                 if(result.usedExtraPlayers)
-                    alert("Foram utilizados jogadores fora de posição, por falta de jogadores.");
+                    setOutOfPosRaffle(true);
                 
                 setSquads(result.squads);
                 
             } catch(error){
                 if(error instanceof NotSufficientPlayers)
-                    alert(error);
+                    setLackPlayers(true);
                 else
-                    alert(error, 'Algum erro inesperado ocorreu.');
+                    setUnexpectedError(true);
             }
         };
 
         if(squads===undefined) showInterstitial( rafflePlayers );
     }, [squads]);
+
+    useEffect( () => {
+        if(_lackPlayers)
+            setTimeout( () => {setLackPlayers(false);}, alert_timer)
+
+        else if(_outOfPosRaffle)
+            setTimeout( () => {setOutOfPosRaffle(false);}, alert_timer)
+
+        else if(_unexpectedError)
+            setTimeout( () => {setUnexpectedError(false);}, alert_timer)
+
+    }, [_lackPlayers, _unexpectedError, _outOfPosRaffle]);
 
     return (
         <ImageBackground
@@ -95,6 +122,24 @@ export const Squads = ( {navigation, route} ) => {
                 </Text>
             </Pressable>
 
+            {_lackPlayers && 
+                <MyAlert 
+                text="Não existem jogadores suficientes cadastrados no sistema."
+                icon={<AlertIcon as={InfoIcon} mr="$3"/>}/>
+            }
+
+            {_outOfPosRaffle && 
+                <MyAlert 
+                text="Foram usados jogadores fora de posição."
+                icon={<AlertIcon as={InfoIcon} mr="$3"/>}/>
+            }
+
+            {_unexpectedError && 
+                <MyAlert 
+                text="Erro inesperado ocorreu."
+                icon={<AlertIcon as={InfoIcon} mr="$3"/>}/>
+            }
+
             {squads && <Team {...{squad: squads[1], upper: false} } />}
         </ImageBackground>
     );
@@ -103,6 +148,11 @@ export const Squads = ( {navigation, route} ) => {
 const styles = StyleSheet.create( {
     container: {
         flex: 1,
+    },
+
+    alert: {
+        alignSelf: 'center',
+        justifyContent: 'center'
     },
 
     raffle_button: {

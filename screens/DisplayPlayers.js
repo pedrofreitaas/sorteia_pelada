@@ -45,26 +45,6 @@ export const Players = ( {navigation, route} ) => {
         style={styles.container}>
             <View style={styles.players_view}>
 
-                {route.params.sortButton===true 
-                ?   <View>
-                        <Pressable
-                        style={styles.raffle_button}
-                        onPress={ () => nav.navigate('Squads', {}) }>
-                            <Text>Sortear</Text>
-                        </Pressable>
-                        
-                        <Info 
-                        props={{
-                            info: ["Para sortear, é necessário habilitar os jogadores para sorteio.",
-                            "Se o jogador estiver habilitado, o ícone sobre sua foto estará verde.",
-                            "O ícone estará vermelho caso contrário.",
-                            "Para alterar o status de disponibilidade do jogador, basta clicar nele e edita-lo."
-                            ],
-                        }}/>
-                    </View>
-
-                : <View></View>}
-
                 <View
                 style={styles.search_bar_view}>  
                     <TextInput
@@ -73,8 +53,7 @@ export const Players = ( {navigation, route} ) => {
                     value={search}
                     onChangeText={ (newText) => {setSearch(newText)} }/>
 
-                    <MaterialIcons
-                    name="search" size={30} color="rgba(0,0,0,1)" />
+                    <MaterialIcons name="search" size={30} color="rgba(0,0,0,1)" />
                 </View>
 
                 <FlatList

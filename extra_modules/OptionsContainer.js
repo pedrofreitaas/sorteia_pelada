@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { Text, View, FlatList, Pressable, StyleSheet } from "react-native";
 
-// container where the user can set a single option for choosing.
+/**
+ * OptionsContainer - Maintains a single user choice, based in a list of options.
+ * @param {props} props - The properties passed to the component.
+ * @param {options} props.options - The list of options.
+ * @param {selected} props.selected - The current selected option.
+ * @returns {JSX.Element} A React element.
+ */
 export function OptionsContainer ( {props} ) {
     const [_options, set_Options] = useState( props.options.map((opt) => {
         if(props.selected === opt) return [true, opt];

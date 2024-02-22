@@ -7,7 +7,6 @@ import {AlterPlayerScreen} from './screens/AlterPlayer.js'
 import {Squads} from './screens/DefineSquad.js'
 import {CreatePlayerScreen} from './screens/CreatePlayer.js';
 import {Players} from './screens/DisplayPlayers.js';
-import { Peladas } from './screens/Peladas.js';
 
 import {BannerAdReady} from './extra_modules/Ads.js';
 
@@ -18,9 +17,29 @@ import { FontAwesome } from '@expo/vector-icons';
 import { RealmProvider } from './extra_modules/RealmScheme';
 
 import { GluestackUIProvider, config } from "@gluestack-ui/themed"
+
+import 'react-native-get-random-values';
  
-// create screens stack.
 const Stack = createNativeStackNavigator(); 
+
+const MainScreenButton = ( {icon, text, nav, destinyScreenStr} ) => {
+  return (
+    <Pressable 
+      style={styles.main_button}
+      onPress={ () => {
+      nav.navigate(destinyScreenStr, {});
+      } }>
+
+        {icon}
+
+        <Text
+        style={styles.main_button_text}> 
+          {text} 
+        </Text>
+
+    </Pressable>
+  )
+}
 
 const MainScreen = ( {navigation, route} ) => {
   const backImg = require('./assets/imgs/soccer_field.jpg');
@@ -35,46 +54,28 @@ const MainScreen = ( {navigation, route} ) => {
         <FontAwesome name="soccer-ball-o" size={30} color="rgba(0,0,0,.7)"/>
       </View>
       
-      <View style={styles.container}>  
-        <Pressable 
-        style={styles.main_button}
-        onPress={ () => {
-          nav.navigate('CreatePlayer', {});
-        } }> 
-          <FontAwesome name="user" size={20} color="rgba(0,0,0,.7)"/>
-          <Text
-          style={styles.main_button_text}> Cadastrar jogador </Text>
-        </Pressable>
-        
-        <Pressable 
-        style={styles.main_button}
-        onPress={ () => {
-          nav.navigate('DisplayPlayers', {sortButton: true});
-        } }> 
-          <FontAwesome name="group" size={20} color="rgba(0,0,0,.7)"/>
-          <Text
-          style={styles.main_button_text}> Sortear </Text>
-        </Pressable>
-        
-        <Pressable 
-        style={styles.main_button}
-        onPress={ () => {
-          nav.navigate('DisplayPlayers', {});
-        } }> 
-          <FontAwesome name="edit" size={20} color="rgba(0,0,0,.7)"/>
-          <Text
-          style={styles.main_button_text}> Alterar jogador </Text>
-        </Pressable>
+      <View style={styles.container}>
 
-        <Pressable 
-        style={styles.main_button}
-        onPress={ () => {
-          nav.navigate('Peladas', {});
-        } }> 
-          <FontAwesome name="angellist" size={20} color="rgba(0,0,0,.7)"/>
-          <Text
-          style={styles.main_button_text}> Peladas </Text>
-        </Pressable>
+        <MainScreenButton
+          nav={nav}
+          destinyScreenStr="CreatePlayer"
+          icon={<FontAwesome name="user" size={20} color="rgba(0,0,0,.7)"/>}
+          text="Cadastrar jogador"
+        />
+
+        <MainScreenButton
+          nav={nav}
+          destinyScreenStr="Squads"
+          icon={<FontAwesome name="group" size={20} color="rgba(0,0,0,.7)"/>}
+          text="Sortear"
+        />
+
+        <MainScreenButton
+          nav={nav}
+          destinyScreenStr="DisplayPlayers"
+          icon={<FontAwesome name="edit" size={20} color="rgba(0,0,0,.7)"/>}
+          text="Alterar jogador"
+        />
 
       </View>
 
@@ -99,12 +100,6 @@ export default function App() {
                 options={ {
                   title: 'Tela Inicial'
                 } }
-              />
-
-              <Stack.Screen
-                name="Peladas"
-                component={Peladas}
-                options={ {title: 'Peladas'} }
               />
 
               <Stack.Screen

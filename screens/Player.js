@@ -17,7 +17,7 @@ export const Player = ( {playerInfo} ) => {
     return (
         <Pressable 
         style={styles.player}
-        onPress={ () => nav.navigate('AlterPlayer', playerInfo) }>
+        onPress={ () => nav.navigate('AlterPlayer', playerInfo)}> 
 
             <View>
                 <Image
@@ -27,6 +27,11 @@ export const Player = ( {playerInfo} ) => {
                 <View style={ playerInfo.available ? styles.available : styles.unavailable }></View>
             </View>
 
+            <View style={styles.text}>
+                <Text style={styles.pos_text}>{playerInfo.pos}</Text>
+                <Text style={styles.name_text}>{playerInfo.name}</Text>
+            </View>
+
             <View
             style={styles.rating}>
                 <MaterialIcons
@@ -34,9 +39,6 @@ export const Player = ( {playerInfo} ) => {
                 <Text> {Number(playerInfo.rating).toFixed(2)} </Text>
             </View>
 
-            <Text style={styles.text}>
-                {playerInfo.pos}{'\n'}{playerInfo.name}
-            </Text>
         </Pressable>
     );
 };
@@ -78,7 +80,14 @@ const styles = StyleSheet.create( {
 
     text: {
         margin: 3,
-        fontSize: 10, fontWeight: 'bold',
+    },
+
+    pos_text: {
+        fontSize: 8, fontWeight: 'bold',
         textAlign: 'center',
+    },
+
+    name_text: {
+        fontSize: 12, fontWeight: 'bold',
     },
 });

@@ -1,6 +1,5 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {Text, StyleSheet, View, Image, TextInput, Pressable, ImageBackground} from "react-native";
-import {Slider} from '@miblanchard/react-native-slider';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
@@ -15,6 +14,10 @@ import * as config from '../config.json';
 import { Info } from '../extra_modules/Info';
 
 import * as RealmScheme from '../extra_modules/RealmScheme';
+
+import { Switch, Heading, Slider, SliderThumb, SliderTrack, SliderFilledTrack, HStack, VStack } from '@gluestack-ui/themed';
+
+import { FontAwesome } from '@expo/vector-icons';
 
 const Stack = createNativeStackNavigator();
 
@@ -81,14 +84,16 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
         source={require("../assets/imgs/lockerroom.jpg")}
         style={styles.background}>
             <Info props={{
-                info: ["Essa é a tela de edição de jogador.",
-                       "Pressione o (X) vermelho para deletar o jogador imediatamente.",
-                       "Pressione a imagem para alterar a imagem do jogador.",
-                       "Pressione o ícone abaixo da imagem para tornar o jogador disponível/indisponível para sorteio.",
-                       "Altere os outros campos da maneira que preferir.",
-                       "A posição LINHA, refere-se ao jogador que pode jogar em qualquer posição, exceto goleiro",
-                       "Quando terminar, clique em Finalizar para alterar o jogador.",
-                ],
+                info: 
+`Essa é a tela de edição de jogador.
+Pressione o (X) vermelho para deletar o jogador imediatamente.
+Pressione a imagem para alterar a imagem do jogador.
+Pressione o ícone abaixo da imagem para tornar o jogador disponível/indisponível para sorteio.
+Altere os outros campos da maneira que preferir.
+A posição LINHA, refere-se ao jogador que pode jogar em qualquer posição, exceto goleiro.
+A posição CORINGA, refere-se ao jogador que pode jogar em qualquer posição, incluindo goleiro.
+Quando terminar, clique em Finalizar para alterar o jogador.`,
+                title: 'Alteração de jogador.'
             }}/>
 
             <View
@@ -107,11 +112,17 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
                     source={ imgURI === "" ? require('../assets/imgs/generic_player.jpg') : {uri: imgURI} }/>
                 </Pressable>
 
-                <Pressable
-                onPress={() => setAvailable(!available)}
-                style={{alignSelf: 'flex-end'}}>
-                    <MaterialIcons name="check-circle-outline" size={45} color={available ? "rgba(0,180,0,.99)" : "rgba(220,0,0,.99)"} />
-                </Pressable>
+                <HStack space="lg" style={styles.switch_container}>
+                    <Text size="md" style={styles.switch_text}>
+                        {available ? "Disponível." : "Indisponível."} 
+                    </Text>
+                    
+                    <Switch
+                    style={styles.switch}
+                    size="lg"
+                    value={available}
+                    onValueChange={() => setAvailable(!available)}/>
+                </HStack>
 
                 <View>
                     <View style={styles.player_name_input_view}>
@@ -129,24 +140,36 @@ export const AlterPlayerScreen = ( {navigation, route} ) => {
                         selected: pos 
                     } }/>
 
-                    <Text style={styles.rating_text}> Nota: {Number(rating).toFixed(2)} </Text>
-                    <Slider
-                    value={rating} onValueChange={ (e)=> {setRating(e[0])} }
-                    minimumValue={0} maximumValue={5}
+                    <VStack w={250} h={50}>
+                        <Heading size="g" color='rgba(0,0,0,.72)' textAlign='left'> Nota {Number(rating).toFixed(2)} </Heading>
+                        <Slider
+                            step={.25}
+                            value={rating}
+                            onChange={ (e)=> {setRating(e)} }
+                            minValue={0} maxValue={5}
+                            defaultValue={50}
+                            size="lg"
+                            orientation="horizontal"
+                            isDisabled={false}
+                            isReversed={false}
+                        >
+                            <SliderTrack>
+                                <SliderFilledTrack bg="$amber500"/>
+                            </SliderTrack>
 
-                    trackStyle={styles.track}
-
-                    minimumTrackTintColor="rgba(255, 255, 0, .88)"
-
-                    thumbStyle={styles.thumb}
-                    thumbImage={require('../assets/imgs/star.png')}
-                    />
+                            <SliderThumb
+                            bg="$transparent">
+                                <FontAwesome name="star" size={25} color="yellow"/>
+                            </SliderThumb>
+                        </Slider>
+                    </VStack>
 
                     <Pressable 
                     style={styles.submit_pressable}
                     onPress={updatePlayer}>
                         <Text style={styles.submit_text}> Finalizar. </Text>
                     </Pressable>
+
                 </View>
 
             </View>
@@ -230,5 +253,20 @@ const styles = StyleSheet.create( {
 
     submit_text: {
         fontSize: 20, fontWeight: 'bold',
+    },
+
+    switch_container: {
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+
+    switch: {
+        marginLeft: -10,
+    },
+
+    switch_text: {
+        marginLeft: 0,
+        fontSize: 14,
+        fontWeight: '300'
     },
 } );

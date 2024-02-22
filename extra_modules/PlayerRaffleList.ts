@@ -1,4 +1,3 @@
-// raffling players.
 import * as config from '../config.json';
 import * as RealmScheme from './RealmScheme';
 
@@ -49,13 +48,11 @@ export class PlayersList {
     // gets the positions that can't fill the position parameter.
     // Ex: the ZAG position can't be filled by a GOL, MEI, ATA.
     getNotPossibleCategorias(pos: string): Array<string> {
-        if(["ZAG", "MEI", "ATA"].includes(pos)) {
-            let values = ["GOL","ZAG", "MEI", "ATA"];
-            values.splice(values.indexOf(pos),1);
-            return values;
-        }
+        let values = ["GOL","ZAG", "MEI", "ATA"];
+        
+        values.splice(values.indexOf(pos),1);
 
-        return ["ZAG", "MEI", "ATA"];
+        return values;
     }
 
     // get all the players registered in the instance that can fill the position in the parameter.
@@ -139,9 +136,9 @@ export class PlayersList {
 
     sortSquads(): {squads: Array<Map<string,RealmScheme.Player>>, usedExtraPlayers: boolean} {
         const squads = [new Map(), new Map()];
-
-        // mixed but no aleatory order of sorting := const sequenceOfSort = config.hasToSort.sort( () => Math.random() - .9 );
-        const sequenceOfSort = config.hasToSort;
+        
+        const sequenceOfSort = config.hasToSort.sort( () => Math.random() - .9 ); // mixed but no aleatory order of sorting
+        //const sequenceOfSort = config.hasToSort;
 
         let usedExtraPlayers = false;
 

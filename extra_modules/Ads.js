@@ -64,7 +64,6 @@ export const BannerAdReady = ( {props} ) => {
                 keywords: ['sports', 'soccer', 'football'],
             }}
             onAdFailedToLoad={ () => setFailed(true) }
-            // onAdLoaded={}
             />
         </View>
     );

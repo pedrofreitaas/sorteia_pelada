@@ -1,4 +1,5 @@
 import Realm from "realm";
+Realm.flags.THROW_ON_GLOBAL_REALM = true;
 import {createRealmContext} from '@realm/react';
 
 // Define your object model

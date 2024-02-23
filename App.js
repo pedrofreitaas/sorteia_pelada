@@ -17,8 +17,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import { RealmProvider } from './extra_modules/RealmScheme';
 
 import { GluestackUIProvider, config } from "@gluestack-ui/themed"
-
-import 'react-native-get-random-values';
  
 const Stack = createNativeStackNavigator(); 
 

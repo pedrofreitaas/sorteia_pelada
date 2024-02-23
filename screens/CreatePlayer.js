@@ -100,7 +100,7 @@ const Form = ( {props} ) => {
                         onChange={ (e)=> {setRating(e)} }
                         minValue={0} maxValue={5}
                         defaultValue={50}
-                        size="lg"
+                        size="xl"
                         orientation="horizontal"
                         isDisabled={false}
                         isReversed={false}
@@ -111,7 +111,7 @@ const Form = ( {props} ) => {
 
                         <SliderThumb
                         bg="$transparent">
-                            <FontAwesome name="star" size={25} color="yellow"/>
+                            <FontAwesome name="star" size={40} color="yellow"/>
                         </SliderThumb>
                     </Slider>
                 </VStack>
@@ -173,32 +173,6 @@ const styles = StyleSheet.create( {
         alignItems: 'center', justifyContent: 'center',
     },
 
-    info_pressable: {
-        backgroundColor: '#fffff1',
-
-        maxWidth: '95%',
-
-        position: 'absolute', right: '3%', top: '3%',
-
-        borderRadius: 10,
-        borderColor: '#004',
-
-        borderStartWidth: 5,
-
-        zIndex: 1,
-    },
-
-    infos: {
-        padding: 10,
-        height: 240, 
-    },
-
-    info_text: {
-        fontSize: 15,
-        marginVertical: 3,
-        textAlign: 'justify',
-    },
-
     form: {
         width: '80%', height: 'fit-content',
 
@@ -233,7 +207,7 @@ const styles = StyleSheet.create( {
     },
 
     submit_button: {
-        marginTop: 20,
+        marginTop: 40,
         alignSelf: 'flex-end',
 
         backgroundColor: 'rgba(50, 120, 220, .90)',

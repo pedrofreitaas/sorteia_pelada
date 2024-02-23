@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Text, StyleSheet, View, Pressable, ImageBackground } from "react-native";
+import { Spinner } from '@gluestack-ui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { Alert, AlertIcon, AlertText, InfoIcon } from '@gluestack-ui/themed';
@@ -141,6 +142,13 @@ export const Squads = ( {navigation, route} ) => {
             }
 
             {squads && <Team {...{squad: squads[1], upper: false} } />}
+
+            {!squads && 
+                <Spinner 
+                color="$amber600"
+                size="xl" 
+                style={styles.loading_spinner}/>}
+
         </ImageBackground>
     );
 };
@@ -200,4 +208,10 @@ const styles = StyleSheet.create( {
     team_rating_text: {
         fontSize: 20, fontWeight: 'bold',
     },
+
+    loading_spinner: {
+        alignSelf: 'center',
+        alignContent: 'center',
+        margin: '50%'
+    }
 } );

@@ -14,6 +14,7 @@ import * as config from '../config.json';
 import { Info } from '../extra_modules/Info';
 
 import * as RealmScheme from '../extra_modules/RealmScheme';
+import {BSON} from "realm";
 
 import { Switch, Heading, Slider, SliderThumb, SliderTrack, SliderFilledTrack, HStack, VStack } from '@gluestack-ui/themed';
 
@@ -22,17 +23,18 @@ import { FontAwesome } from '@expo/vector-icons';
 const Stack = createNativeStackNavigator();
 
 export const AlterPlayerScreen = ( {navigation, route} ) => {
-    const [name, setName] = useState(route.params.name);
-    const [pos, setPos] = useState(route.params.pos);
-    const [rating, setRating] = useState(route.params.rating);
-    const [imgURI, setImgURI] = useState(route.params.imgURI);
-    const [available, setAvailable] = useState(route.params.available);
+    const OBJid = new BSON.ObjectID(route.params._id.toHexString());
+    const player = RealmScheme.useObject(RealmScheme.Player, OBJid);
+
+    const [name, setName] = useState(player.name);
+    const [pos, setPos] = useState(player.pos);
+    const [rating, setRating] = useState(player.rating);
+    const [imgURI, setImgURI] = useState(player.imgURI);
+    const [available, setAvailable] = useState(player.available);
 
     const nav = useNavigation();
 
     const realm = RealmScheme.useRealm();
-
-    const player = RealmScheme.useObject(RealmScheme.Player, route.params._id);
 
     const setPlayerImg = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -219,13 +221,6 @@ const styles = StyleSheet.create( {
         alignSelf: 'center',
 
         fontWeight: 'bold', fontStyle: 'italic', fontSize: 18,
-    },
-
-    rating_text: {
-        fontWeight: 'bold', fontSize: 20,
-        alignSelf: 'center',
-
-        marginVertical: 30,
     },
 
     thumb: {

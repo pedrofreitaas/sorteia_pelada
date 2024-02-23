@@ -3,15 +3,14 @@
     "android_app_id": "ca-app-pub-6887836893019511~3729403238",
     "ios_app_id": "ca-app-pub-6887836893019511~3729403238"
   },
-
   "expo": {
     "name": "sorteia_pelada",
     "slug": "sorteia_pelada",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/imgs/icon.png",
+    "icon": "/assets/imgs/icon.png",
     "splash": {
-      "image": "./assets/imgs/splash.png",
+      "image": "/assets/imgs/splash.png",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
@@ -21,7 +20,7 @@
       "supportsTablet": true
     },
     "android": {
-      "versionCode": 2,
+      "versionCode": 6,
       "icon": "./assets/imgs/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/imgs/icon.png",

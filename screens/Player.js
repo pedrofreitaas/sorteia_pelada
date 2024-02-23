@@ -12,12 +12,12 @@ const evHandler = new NativeEventEmitter();
 export const Player = ( {playerInfo} ) => {
     const nav = useNavigation();
 
-    useEffect( () => {}, []);
+    const player_id_hex_string = playerInfo._id.toHexString();
 
     return (
         <Pressable 
         style={styles.player}
-        onPress={ () => nav.navigate('AlterPlayer', playerInfo)}> 
+        onPress={ () => nav.navigate('AlterPlayer', player_id_hex_string)}> 
 
             <View>
                 <Image

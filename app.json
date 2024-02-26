@@ -8,9 +8,9 @@
     "slug": "sorteia_pelada",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "/assets/imgs/icon.png",
+    "icon": "C:/Users/freit/Desktop/projetos/sorteia_pelada_root/sorteia_pelada/assets/imgs/icon.png",
     "splash": {
-      "image": "/assets/imgs/splash.png",
+      "image": "C:/Users/freit/Desktop/projetos/sorteia_pelada_root/sorteia_pelada/assets/imgs/splash.png",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
@@ -20,10 +20,10 @@
       "supportsTablet": true
     },
     "android": {
-      "versionCode": 6,
-      "icon": "./assets/imgs/icon.png",
+      "versionCode": 7,
+      "icon": "C:/Users/freit/Desktop/projetos/sorteia_pelada_root/sorteia_pelada/assets/imgs/icon.png",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/imgs/icon.png",
+        "foregroundImage": "C:/Users/freit/Desktop/projetos/sorteia_pelada_root/sorteia_pelada/assets/imgs/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.freitaas.sorteia_pelada"

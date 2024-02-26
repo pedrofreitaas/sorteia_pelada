@@ -23,7 +23,7 @@ import { FontAwesome } from '@expo/vector-icons';
 const Stack = createNativeStackNavigator();
 
 export const AlterPlayerScreen = ( {navigation, route} ) => {
-    const OBJid = new BSON.ObjectID(route.params._id.toHexString());
+    const OBJid = new BSON.ObjectID(route.params);
     const player = RealmScheme.useObject(RealmScheme.Player, OBJid);
 
     const [name, setName] = useState(player.name);

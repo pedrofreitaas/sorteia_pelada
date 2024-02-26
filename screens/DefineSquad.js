@@ -38,15 +38,15 @@ const Team = ( {squad, upper} ) => {
             flexDirection: upper ? 'column' : 'column-reverse',
         }}>
             <View style={styles.position}>
-                {squad.get("GOL").map( item => <Player playerInfo={item}/> )}
+                {squad.get("GOL").map( item => <Player key={item._id} playerInfo={item}/>)}
             </View>
 
             <View style={styles.position}>
-                {squad.get("ZAG").map( item => <Player playerInfo={item}/> )}
+                {squad.get("ZAG").map( item => <Player key={item._id} playerInfo={item}/> )}
             </View>
 
             <View style={styles.position}>
-                {squad.get("MEI").map( item => <Player playerInfo={item}/> )}
+                {squad.get("MEI").map( item => <Player key={item._id} playerInfo={item}/> )}
             </View>
             
             <View style={styles.team_end}>
@@ -55,7 +55,7 @@ const Team = ( {squad, upper} ) => {
                     <Text style={styles.team_rating_text}>{mediumRating.toFixed(2)}</Text>
                 </View>
 
-                {squad.get("ATA").map( item => <Player playerInfo={item}/> )}
+                {squad.get("ATA").map( item => <Player key={item._id} playerInfo={item}/> )}
             </View>
         </View>
     );
